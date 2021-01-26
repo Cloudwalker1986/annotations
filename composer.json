@@ -3,11 +3,12 @@
     "description": "With this annotation component you will able to developer faster and easier your application.",
     "type": "project",
     "require": {
-        "autowired/autowired": "1.0.0"
+        "autowired/autowired": "1.0.0",
+        "ext-mbstring": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
-        "phpunit/phpunit": "^9.5"
+        "phpunit/phpunit": "^9.5.1"
     },
     "license": "MIT",
     "authors": [
@@ -16,5 +17,15 @@
             "email": "munchausen.dennis@gmail.com"
         }
     ],
-    "minimum-stability": "beta"
+    "minimum-stability": "beta",
+    "autoload": {
+        "classmap": [
+            "src/",
+            "test/"
+        ],
+        "psr-4": {
+            "": "src/",
+            "RequestTest\\": "test/RequestTest"
+        }
+    }
 }
