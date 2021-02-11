@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace Request\Route;
 
+use Autowired\Autowired;
+use Autowired\AutowiredHandler;
+use Request\Arguments\ArgumentsResolver;
 use Request\Attributes\Route;
-use Request\Response\ResponseEntity;
+use Request\Response\Response;
 
 /**
  * @package Request\Route
@@ -12,16 +15,24 @@ use Request\Response\ResponseEntity;
  */
 class RouteResolver
 {
+    use AutowiredHandler;
+
+    #[Autowired]
+    private ArgumentsResolver $argumentResolver;
+
     public function resolveMatchedRoute(
         \ReflectionMethod $method,
         \ReflectionAttribute $routeAnnotation,
         string $requestUri, \ReflectionClass $controllerReflection
-    ): ?ResponseEntity {
-        if (!$this->hasMatchedRoute($routeAnnotation->newInstance(), $requestUri)) {
+    ): ?Response {
+
+        /** @var Route $route */
+        $route = $routeAnnotation->newInstance();
+        if (!$this->hasMatchedRoute($route, $requestUri)) {
             return null;
         }
 
-        $arguments = [];
+        $arguments = $this->argumentResolver->resolve($method->getParameters(), $route, $requestUri);
 
         try {
             return call_user_func_array([$controllerReflection->newInstance(), $method->getName()], $arguments);

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Request\Response\Rest;
 
-use Request\Response\RestResponseEntity;
+use Request\Response\RestResponse;
 
 class ResponseAccepted extends RestResponseAbstract
 {
