@@ -3,21 +3,26 @@ declare(strict_types=1);
 
 namespace Request\Response\Rest;
 
-use Request\Response\RestResponseEntity;
+use Request\Response\RestResponse;
 
-abstract class RestResponseAbstract implements RestResponseEntity
+abstract class RestResponseAbstract implements RestResponse
 {
     protected int $status;
 
-    protected array $payload = [];
+    protected ?Entity $entity;
+
+    public function __construct(?Entity $entity = null)
+    {
+        $this->entity = $entity;
+    }
 
     public function getStatus(): int
     {
         return $this->status;
     }
 
-    public function getPayload(): array
+    public function getEntity(): ?Entity
     {
-        return $this->payload;
+        return $this->entity;
     }
 }

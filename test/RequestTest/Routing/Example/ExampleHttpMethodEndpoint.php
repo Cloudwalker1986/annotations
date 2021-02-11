@@ -4,10 +4,12 @@ declare(strict_types=1);
 namespace RequestTest\Routing;
 
 use Request\Attributes\Route;
+use Request\Response\Rest\Entity;
 use Request\Response\Rest\ResponseAccepted;
 use Request\Response\Rest\ResponseCreated;
 use Request\Response\Rest\ResponseOk;
-use Request\Response\RestResponseEntity;
+use Request\Response\RestResponse;
+use RequestTest\Routing\Example\ExampleHttpMethodEntity;
 
 /**
  * @package RequestTest\Routing
@@ -16,19 +18,19 @@ use Request\Response\RestResponseEntity;
 class ExampleHttpMethodEndpoint
 {
     #[Route("/")]
-    public function endpointWithNoParameters(): RestResponseEntity
+    public function endpointWithNoParameters(): RestResponse
     {
-        return new ResponseOk();
+        return new ResponseOk(new ExampleHttpMethodEntity());
     }
 
     #[Route("/", Route::HTTP_METHOD_POST)]
-    public function aDifferentEndpointWithNoParamters(): RestResponseEntity
+    public function aDifferentEndpointWithNoParamters(): RestResponse
     {
         return new ResponseCreated();
     }
 
     #[Route("/", Route::HTTP_METHOD_DELETE)]
-    public function oneMoreEndpointFor(): RestResponseEntity
+    public function oneMoreEndpointFor(): RestResponse
     {
         return new ResponseAccepted();
     }

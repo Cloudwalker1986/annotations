@@ -5,12 +5,14 @@ namespace RequestTest\Routing;
 
 use PHPUnit\Framework\TestCase;
 use Request\Attributes\Route;
+use Request\Response\Rest\Entity;
 use Request\Response\Rest\ResponseAccepted;
 use Request\Response\Rest\ResponseCreated;
 use Request\Response\Rest\ResponseNoContent;
 use Request\Response\Rest\ResponseOk;
-use Request\Response\RestResponseEntity;
+use Request\Response\RestResponse;
 use Request\Routing;
+use RequestTest\Routing\Example\ExampleHttpMethodEntity;
 use RequestTest\Routing\Example\ExampleUriEndpoint;
 
 /**
@@ -23,12 +25,12 @@ class RoutingTest extends TestCase
      * @dataProvider dataProviderForRouteToEndpointByHttpMethod
      * @test
      *
-     * @param RestResponseEntity $expectedResponse
+     * @param RestResponse $expectedResponse
      * @param string $requestUri
      * @param callable $setHttpMethod
      */
     public function routeToEndpointByHttpMethod(
-        RestResponseEntity $expectedResponse,
+        RestResponse $expectedResponse,
         string $requestUri,
         callable $setHttpMethod
     ) {
@@ -46,7 +48,7 @@ class RoutingTest extends TestCase
     {
         return [
             'Route to "/" by a get request' => [
-                'expected' => new ResponseOk(),
+                'expected' => new ResponseOk(new ExampleHttpMethodEntity()),
                 'requestUri' => '/',
                 'setHttpMethod' => function() {
                     $_SERVER['REQUEST_METHOD'] = Route::HTTP_METHOD_GET;

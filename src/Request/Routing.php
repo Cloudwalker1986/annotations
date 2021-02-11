@@ -7,7 +7,7 @@ use Autowired\Autowired;
 use Autowired\AutowiredHandler;
 use Request\Arguments\ArgumentsResolver;
 use Request\Attributes\Route;
-use Request\Response\ResponseEntity;
+use Request\Response\Response;
 use Request\Route\RouteResolver;
 
 /**
@@ -26,7 +26,7 @@ final class Routing
 
     private array $registeredController;
 
-    public function dispatchRoute(string $requestUri): ResponseEntity
+    public function dispatchRoute(string $requestUri): Response
     {
         $positionOfGetParams = mb_strpos($requestUri, "?");
 
