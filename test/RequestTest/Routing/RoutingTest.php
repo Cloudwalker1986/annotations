@@ -5,13 +5,13 @@ namespace RequestTest\Routing;
 
 use PHPUnit\Framework\TestCase;
 use Request\Attributes\Route;
-use Request\Response\Rest\Entity;
 use Request\Response\Rest\ResponseAccepted;
 use Request\Response\Rest\ResponseCreated;
 use Request\Response\Rest\ResponseNoContent;
 use Request\Response\Rest\ResponseOk;
 use Request\Response\RestResponse;
 use Request\Routing;
+use RequestTest\Routing\Example\ExampleHttpMethodEndpoint;
 use RequestTest\Routing\Example\ExampleHttpMethodEntity;
 use RequestTest\Routing\Example\ExampleUriEndpoint;
 

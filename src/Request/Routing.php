@@ -8,6 +8,8 @@ use Autowired\AutowiredHandler;
 use Request\Arguments\ArgumentsResolver;
 use Request\Attributes\Route;
 use Request\Response\Response;
+use Request\Response\RestResponse;
+use Request\Route\Dispatcher;
 use Request\Route\RouteResolver;
 
 /**
@@ -26,7 +28,51 @@ final class Routing
 
     private array $registeredController;
 
-    public function dispatchRoute(string $requestUri): Response
+    public function createDispatcher(string $requestUri): Dispatcher
+    {
+        $positionOfGetParams = mb_strpos($requestUri, "?");
+
+        if ($positionOfGetParams !== false && $positionOfGetParams >= 0) {
+            $requestUri = mb_substr($requestUri, 0, $positionOfGetParams);
+        }
+
+        foreach ($this->registeredController as $controller) {
+            try {
+                $controllerReflection = new \ReflectionClass($controller);
+
+                foreach ($controllerReflection->getMethods() as $method) {
+                    if (!$method->isPublic()) {
+                        continue;
+                    }
+
+                    $routeAnnotation = $method->getAttributes(Route::class)[0] ?? null;
+
+                    if (null === $routeAnnotation) {
+                        continue;
+                    }
+
+                    $dispatcher = $this->routeResolver->getDispatcher(
+                        $method,
+                        $routeAnnotation,
+                        $requestUri,
+                        $controllerReflection
+                    );
+
+                    if ($dispatcher === null) {
+                        continue;
+                    }
+
+                    return $dispatcher;
+                }
+            } catch (\ReflectionException $e) {
+            }
+        }
+        //call here an default error controller
+        throw new \RuntimeException('Unable to route');
+
+    }
+
+    public function dispatchRoute(string $requestUri): Response|RestResponse
     {
         $positionOfGetParams = mb_strpos($requestUri, "?");
 

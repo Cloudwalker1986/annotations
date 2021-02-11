@@ -5,9 +5,9 @@ namespace Request\Response\Rest;
 
 use Request\Response\Rest\Entity\Entity;
 
-class ResponseOk extends RestResponseAbstract
+class ResponseBadRequest extends RestResponseAbstract
 {
-    protected int $status = 200;
+    protected int $status = 400;
 
     public function __construct(Entity $entity)
     {

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Request\Response\Rest;
 
+use Request\Response\Rest\Entity\Entity;
 use Request\Response\RestResponse;
 
 abstract class RestResponseAbstract implements RestResponse

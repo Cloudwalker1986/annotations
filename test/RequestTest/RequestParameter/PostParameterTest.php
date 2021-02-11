@@ -9,13 +9,14 @@ use Request\Response\Rest\ResponseBadRequest;
 use Request\Response\Rest\ResponseOk;
 use Request\Response\RestResponse;
 use Request\Routing;
-use RequestTest\RequestParameter\Examples\ExampleGetParameters;
 use RequestTest\RequestParameter\Examples\ExampleGetParameterEntity;
+use RequestTest\RequestParameter\Examples\ExamplePostParameters;
 use RequestTest\RequestParameter\Examples\ExampleUriParameterEntity;
 use Utils\HasMap;
 
-class GetParameterTest extends TestCase
+class PostParameterTest extends TestCase
 {
+
     /**
      * @dataProvider dataProviderReadSingleGetParametersToSingleVariables
      * @test
@@ -32,7 +33,7 @@ class GetParameterTest extends TestCase
     {
         $setParameters();
         $routing = new Routing();
-        $routing->registerController(ExampleGetParameters::class);
+        $routing->registerController(ExamplePostParameters::class);
         $response = $routing->dispatchRoute($requestUri);
 
         static::assertEquals($expectedResponse, $response);
@@ -42,16 +43,16 @@ class GetParameterTest extends TestCase
     {
         $errorHashMap = new HasMap();
 
-        $errorHashMap->add('firstGetParameter','Field is required and can´t be empty');
+        $errorHashMap->add('firstPostParameter','Field is required and can´t be empty');
 
         return [
             'Request with one get parameter' => [
                 'expectedResponse' => new ResponseOk(new ExampleGetParameterEntity('hello world')),
-                'requestUri' => '/example/uri?first-get-parameter=hello world',
+                'requestUri' => '/example/uri',
                 'setParameters' => function() {
-                    $_SERVER["REQUEST_METHOD"] = "GET";
-                    $_GET = [
-                        'firstGetParameter' => 'hello world'
+                    $_SERVER["REQUEST_METHOD"] = "POST";
+                    $_POST = [
+                        'firstPostParameter' => 'hello world'
                     ];
                 }
             ],
@@ -59,15 +60,15 @@ class GetParameterTest extends TestCase
                 'expectedResponse' => new ResponseBadRequest(new BadRequestEntity('Required parameters are missing', $errorHashMap)),
                 'requestUri' => '/example/uri',
                 'setParameters' => function() {
-                    $_SERVER["REQUEST_METHOD"] = "GET";
-                    $_GET = [];
+                    $_SERVER["REQUEST_METHOD"] = "POST";
+                    $_POST = [];
                 }
             ],
             'Request with one uri parameter' => [
                 'expectedResponse' => new ResponseOk(new ExampleUriParameterEntity(1)),
                 'requestUri' => '/product/1/preview',
                 'setParameters' => function() {
-                    $_SERVER["REQUEST_METHOD"] = "GET";
+                    $_SERVER["REQUEST_METHOD"] = "POST";
                 }
             ]
         ];

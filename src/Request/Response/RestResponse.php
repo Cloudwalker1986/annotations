@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Request\Response;
 
-use Request\Response\Rest\Entity;
+use Request\Response\Rest\Entity\Entity;
 
 interface RestResponse extends Response
 {

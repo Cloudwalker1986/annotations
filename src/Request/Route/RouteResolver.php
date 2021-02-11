@@ -5,9 +5,15 @@ namespace Request\Route;
 
 use Autowired\Autowired;
 use Autowired\AutowiredHandler;
+use ReflectionAttribute;
+use ReflectionClass;
+use ReflectionMethod;
 use Request\Arguments\ArgumentsResolver;
 use Request\Attributes\Route;
+use Request\Exceptions\InvalidParameterException;
 use Request\Response\Response;
+use Request\Response\Rest\Entity\BadRequestEntity;
+use Request\Response\Rest\ResponseBadRequest;
 
 /**
  * @package Request\Route
@@ -23,7 +29,8 @@ class RouteResolver
     public function resolveMatchedRoute(
         \ReflectionMethod $method,
         \ReflectionAttribute $routeAnnotation,
-        string $requestUri, \ReflectionClass $controllerReflection
+        string $requestUri,
+        \ReflectionClass $controllerReflection
     ): ?Response {
 
         /** @var Route $route */
@@ -32,10 +39,17 @@ class RouteResolver
             return null;
         }
 
-        $arguments = $this->argumentResolver->resolve($method->getParameters(), $route, $requestUri);
-
         try {
-            return call_user_func_array([$controllerReflection->newInstance(), $method->getName()], $arguments);
+            $arguments = $this->argumentResolver->resolve($method->getParameters(), $route, $requestUri);
+            $dispatcher = new Dispatcher($controllerReflection, $method->getName(), $arguments);
+            return $dispatcher->dispatch();
+        } catch (InvalidParameterException $invalidParameterException) {
+            return new ResponseBadRequest(
+                new BadRequestEntity(
+                    $invalidParameterException->getMessage(),
+                    $invalidParameterException->getErrorMap()
+                )
+            );
         } catch (\ReflectionException $e) {
         }
         return null;
@@ -66,5 +80,27 @@ class RouteResolver
         };
 
         return $isRouteCorrect && $isMethodCorrect;
+    }
+
+    public function getDispatcher(
+        ReflectionMethod $method,
+        ReflectionAttribute $routeAnnotation,
+        string $requestUri,
+        ReflectionClass $controllerReflection
+    ): ?Dispatcher
+    {
+        /** @var Route $route */
+        $route = $routeAnnotation->newInstance();
+        if (!$this->hasMatchedRoute($route, $requestUri)) {
+            return null;
+        }
+
+        try {
+            $arguments = $this->argumentResolver->resolve($method->getParameters(), $route, $requestUri);
+            return new Dispatcher($controllerReflection, $method->getName(), $arguments);
+        } catch (InvalidParameterException $invalidParameterException) {
+            // implementation for dispatcher to error route?
+        }
+        return null;
     }
 }
