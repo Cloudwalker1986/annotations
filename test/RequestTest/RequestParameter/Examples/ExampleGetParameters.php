@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 namespace RequestTest\RequestParameter\Examples;
 
-use Request\Attributes\GetParameter;
+use Request\Attributes\Parameters\GetParameter;
 use Request\Attributes\Route;
-use Request\Response\Rest\Entity;
 use Request\Response\Rest\ResponseOk;
 use Request\Response\RestResponse;
 

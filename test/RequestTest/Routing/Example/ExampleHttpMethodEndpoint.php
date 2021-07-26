@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace RequestTest\Routing;
+namespace RequestTest\Routing\Example;
 
 use Request\Attributes\Route;
 use Request\Response\Rest\Entity;
@@ -9,7 +9,6 @@ use Request\Response\Rest\ResponseAccepted;
 use Request\Response\Rest\ResponseCreated;
 use Request\Response\Rest\ResponseOk;
 use Request\Response\RestResponse;
-use RequestTest\Routing\Example\ExampleHttpMethodEntity;
 
 /**
  * @package RequestTest\Routing

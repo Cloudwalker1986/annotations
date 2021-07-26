@@ -3,34 +3,66 @@ declare(strict_types=1);
 
 namespace Request\Arguments;
 
+use Autowired\Autowired;
+use Autowired\AutowiredHandler;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Request\Attributes\GetParameter;
+use ReflectionClass;
+use Request\Arguments\Json\JsonResolver;
+use Request\Attributes\Json\JsonRequest;
 use Request\Attributes\Route;
+use Request\Exceptions\InvalidParameterException;
+use Request\Request;
+use Utils\HasMap;
+use Utils\Map;
 
 final class ArgumentsResolver
 {
+    use AutowiredHandler;
+
+    #[Autowired]
+    private Request $request;
+
+    #[Autowired]
+    private jsonResolver $jsonResolver;
+
+    /**
+     * @throws InvalidArgumentDefinitionException
+     * @throws \JsonException
+     */
     public function resolve(array $parameters, Route $route, string $requestUri): array
     {
         $arguments = [];
+        $errorParameters = new HasMap();
 
         foreach ($parameters as $parameter) {
             $attributes = $parameter->getAttributes();
             foreach ($attributes as $attribute) {
-                if (GetParameter::class === $attribute->getName()) {
-                    $arguments[] = $this->resolveValues($parameter, $_GET, $route, $requestUri);
-                }
+                $requestParameters = $this->request->getParametersByAttributeType($attribute->newInstance());
+                $arguments[] = $this->resolveValues(
+                    $parameter,
+                    $requestParameters,
+                    $route,
+                    $requestUri,
+                    $errorParameters
+                );
             }
         }
+
+        if ($errorParameters->count() > 0) {
+            throw new InvalidParameterException($errorParameters);
+        }
+
         return $arguments;
     }
 
     private function resolveValues(
         \ReflectionParameter $parameter,
-        array $getParams,
+        array $params,
         Route $route,
-        string $requestUri
+        string $requestUri,
+        Map $errorMap
     ): float|array|bool|int|string|object {
         $parameterType = $parameter->getType();
         if ($parameterType === null) {
@@ -43,29 +75,53 @@ final class ArgumentsResolver
         }
         $type = $parameterType->getName();
         if (class_exists($type)) {
-            $object = $this->handleObjectValues($type, $getParams);
+            $object = $this->handleObjectValues($type, $params);
         } else {
             $object = $this->handleNormalType(
                 $parameterType->getName(),
                 str_replace(' ', '', lcfirst($parameter->getName())),
-                $getParams,
+                $params,
                 $route,
                 $requestUri
             );
         }
 
+        if (!$parameter->allowsNull() && $type !== 'bool' && !$object) {
+            $errorMap->add($parameter->getName(), 'Field is required and can´t be empty');
+        }
+
         return $object;
     }
 
-    private function handleObjectValues(string $object, array $getParams)
+    private function handleObjectValues(string $object, array $params)
     {
         $object = new $object();
+
         try {
-            $reflection = new \ReflectionClass($object);
+            $reflection = new ReflectionClass($object);
 
             foreach ($reflection->getProperties() as $property) {
-                $type = $property->getType();
-                $val = $getParams[$property->getName()] ?? null;
+                $jsonRequestAttributes = $property->getAttributes(JsonRequest::class);
+                if (isset($jsonRequestAttributes[0])) {
+                    /** @var JsonRequest $jsonRequest */
+                    $jsonRequest = $jsonRequestAttributes[0]->newInstance();
+                    if (!empty($jsonRequest->getClassType())) {
+                        return $this->jsonResolver->resolveObject(
+                            $jsonRequest,
+                            $property,
+                            $params,
+                            function(string $type, array $internalParams) {
+                                return $this->handleObjectValues($type, $internalParams);
+                            },
+                            $object
+                        );
+                    }
+                    $val = $params[$jsonRequest->getAlias() ?? $property->getName()];
+                    $type = $property->getType();
+                } else {
+                    $type = $property->getType();
+                    $val = $params[$property->getName()] ?? null;
+                }
 
                 if ($val === null || $type === null) {
                     continue;
@@ -93,23 +149,23 @@ final class ArgumentsResolver
     private function handleNormalType(
         string $type,
         string $key,
-        array $getParams,
+        array $params,
         Route $route,
         string $requestUri
     ): bool|int|array|float|string {
         $urlValue = $this->urlValue($route, $requestUri);
 
         return match ($type) {
-            'int' => (int) ($getParams[$key] ?? $urlValue),
-            'float' => (float) ($getParams[$key] ?? $urlValue),
-            'double' => (double) ($getParams[$key] ?? $urlValue),
-            'bool' => match (strtolower(($getParams[$key] ?? $urlValue))) {
+            'int' => (int) ($params[$key] ?? $urlValue),
+            'float' => (float) ($params[$key] ?? $urlValue),
+            'double' => (double) ($params[$key] ?? $urlValue),
+            'bool' => match (strtolower(($params[$key] ?? $urlValue))) {
                 '1', 'yes', 'true', 'on' => true,
                 default => false
 
             },
-            'array' => explode(',', ($getParams[$key] ?? $urlValue)),
-            default => ($getParams[$key] ?? $urlValue)
+            'array' => explode(',', ($params[$key] ?? $urlValue)),
+            default => ($params[$key] ?? $urlValue)
         };
     }
 
