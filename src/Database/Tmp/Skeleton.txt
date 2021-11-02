@@ -1,0 +1,12 @@
+<?php
+declare(strict_types=1);
+
+namespace Database\Tmp\Concrete;
+
+use Database\BaseRepository;
+__USE__
+
+class __HASH__Repository extends BaseRepository implements __INTERFACE__
+{
+    __BODY__
+};
