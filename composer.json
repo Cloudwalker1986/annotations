@@ -3,9 +3,10 @@
     "description": "With this annotation component you will able to developer faster and easier your application.",
     "type": "project",
     "require": {
-        "autowired/autowired": "1.3.*",
+        "autowired/autowired": "1.4.*",
         "ext-mbstring": "*",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "ext-yaml": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",
@@ -25,6 +26,7 @@
             "tests/"
         ],
         "psr-4": {
+            "Configuration\\": "src/Configuration",
             "Database\\": "src/Database",
             "Request\\": "src/Request",
             "Utils\\": "src/Utils",
@@ -34,7 +36,7 @@
     },
     "scripts": {
         "all-tests": [
-            "vendor/bin/phpunit tests/"
+            "vendor/bin/phpunit -c tests/config.xml tests/"
         ]
     }
 }

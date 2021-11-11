@@ -3,18 +3,30 @@ declare(strict_types=1);
 
 namespace DatabaseTest\Query;
 
+use Autowired\Autowired;
+use Autowired\AutowiredHandler;
+use Database\Reader\PdoReader;
 use DatabaseTest\Example\ExampleService;
 use DatabaseTest\Example\UserEntity;
-use PDO;
 use PHPUnit\Framework\TestCase;
 use Utils\ListCollection;
 
 class BaseRepositoryTest extends TestCase
 {
+    use AutowiredHandler;
+
+    public function __construct(?string $name = null, array $data = [], $dataName = '')
+    {
+        $this->autowired();
+        parent::__construct($name, $data, $dataName);
+    }
+
+    #[Autowired]
+    private PdoReader $pdoReader;
+
     protected function setUp(): void
     {
-        $pdo = new PDO('mysql:dbname=db_test;host=127.0.0.1', 'root', 'password');
-        $pdo->exec(
+        $this->pdoReader->getConnection()->exec(
             <<<'TAG'
 CREATE TABLE IF NOT EXISTS `user` (
   `id_user` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -27,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 TAG
         );
-        $pdo->exec(
+        $this->pdoReader->getConnection()->exec(
             <<<'TAG'
 INSERT INTO `user` (`id_user`, `name`, `email`) 
     VALUES  
@@ -41,8 +53,7 @@ TAG
 
     protected function tearDown(): void
     {
-        $pdo = new PDO('mysql:dbname=db_test;host=127.0.0.1', 'root', 'password');
-        $pdo->exec('DROP TABLE user');
+        $this->pdoReader->getConnection()->exec('DROP TABLE user');
         parent::tearDown();
     }
 

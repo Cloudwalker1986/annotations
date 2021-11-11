@@ -47,24 +47,33 @@ trait AutowiredHandler
             $uses .= 'use '. $u . ';' . PHP_EOL;
         }
 
-        file_put_contents(
-            __DIR__ . $ds . 'Tmp' . $ds . 'Concrete' . $ds . $hash .'Repository.php',
-            str_replace(
-                [
-                    '__USE__',
-                    '__HASH__',
-                    '__INTERFACE__',
-                    '__BODY__',
-                ],
-                [
-                    $uses,
-                    $hash,
-                    $interfaceName,
-                    $bodyContent,
-                ],
-                $skeleton
-            )
+        $classBody = str_replace(
+            [
+                '__USE__',
+                '__HASH__',
+                '__INTERFACE__',
+                '__BODY__',
+            ],
+            [
+                $uses,
+                $hash,
+                $interfaceName,
+                $bodyContent,
+            ],
+            $skeleton
         );
+
+        if (!class_exists($className, false)) {
+            eval($classBody);
+
+            call_user_func(
+                [
+                    $className,
+                    'invoke'
+                ],
+                ...$typed->getMethods()
+            );
+        }
         return $className;
     }
 

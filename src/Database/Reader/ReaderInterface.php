@@ -8,4 +8,6 @@ interface ReaderInterface
     public function fetchRow(string $query, array $bindingParameters);
 
     public function fetchAll(string $query, array $bindingParameters);
+
+    public function getConnection(): \PDO;
 }
