@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Database;
+namespace Database\Autowired;
 
 use Autowired\Autowired;
+use Autowired\Handler\InterfaceHandler;
 use Database\Attributes\Query;
-use JetBrains\PhpStorm\Pure;
+use Database\FunctionSignature;
+use ReflectionClass;
 
-trait AutowiredHandler
+class AutowiredHandler implements InterfaceHandler
 {
-    use \Autowired\AutowiredHandler;
-
     private array $scalarTypes = [
         'int',
         'string',
@@ -20,11 +20,21 @@ trait AutowiredHandler
         'null'
     ];
 
-    protected function handleInterface(Autowired $autowiredAttribute, \ReflectionClass $typed): string
+    private array $reservedTypes = [
+        "array",
+        "string",
+        "int",
+        "bool",
+        "float",
+        "object",
+        "stdClass",
+    ];
+
+    public function autowire(Autowired $autowiredAttribute, ReflectionClass $typed): string
     {
         $ds = DIRECTORY_SEPARATOR;
 
-        $skeleton = file_get_contents(__DIR__ . $ds . 'Tmp' . $ds . 'Skeleton.txt');
+        $skeleton = file_get_contents(realpath(__DIR__ . $ds . '..' . $ds .'Tmp' . $ds . 'Skeleton.txt'));
 
         $className = 'Database\\Tmp\\Concrete\\%sRepository';
 
@@ -43,8 +53,8 @@ trait AutowiredHandler
 
         $bodyContent = $this->renderBodyContent($typed, $use);
         $uses = '';
-        foreach($use as $u) {
-            $uses .= 'use '. $u . ';' . PHP_EOL;
+        foreach ($use as $u) {
+            $uses .= 'use ' . $u . ';' . PHP_EOL;
         }
 
         $classBody = str_replace(
@@ -78,18 +88,16 @@ trait AutowiredHandler
     }
 
 
-    private function renderBodyContent(\ReflectionClass $interfaceReflection, array &$use): string
+    private function renderBodyContent(ReflectionClass $interfaceReflection, array &$use): string
     {
         $body = '';
-
-        $reserved = $this->getReservedParameterTypes();
 
         foreach ($interfaceReflection->getMethods() as $method) {
             $queryAttribute = $method->getAttributes(Query::class)[0] ?? null;
 
             if ($queryAttribute !== null) {
                 $returnType = $method->getReturnType()->getName();
-                if (!in_array($returnType , $use, true) ) {
+                if (!in_array($returnType, $use, true)) {
                     $use[] = $returnType;
                 }
                 $parameters = '';
@@ -97,7 +105,7 @@ trait AutowiredHandler
 
                 foreach ($method->getParameters() as $parameter) {
                     $parameterKey = $parameter->getType();
-                    if (in_array($parameter->getType(), $reserved, true)) {
+                    if (in_array($parameter->getType(), $this->reservedTypes, true)) {
                         $parameters .= sprintf(
                             '%s $%s,',
                             $parameterKey,
@@ -118,7 +126,7 @@ trait AutowiredHandler
                         );
                     }
 
-                    $parameterVariable .= '\'' . lcfirst($parameter->getName()) . '\' => $' . $parameter->getName() .',';
+                    $parameterVariable .= '\'' . lcfirst($parameter->getName()) . '\' => $' . $parameter->getName() . ',';
                 }
 
                 $returnNameExploded = explode('\\', $returnType);
@@ -141,7 +149,8 @@ trait AutowiredHandler
         return $body;
     }
 
-    #[Pure] private function getFunctionTemplate(FunctionSignature $functionSignature): string {
+    private function getFunctionTemplate(FunctionSignature $functionSignature): string
+    {
 
         if (str_contains('Collection', $functionSignature->getReturnParam())) {
 

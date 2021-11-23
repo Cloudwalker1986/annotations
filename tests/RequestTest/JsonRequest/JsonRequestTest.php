@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace RequestTest\JsonRequest;
 
 use Autowired\Cache\CachingService;
+use Autowired\DependencyContainer;
 use Closure;
 use PHPUnit\Framework\TestCase;
 use Request\Attributes\Parameters\Parameter;
@@ -34,16 +35,17 @@ class JsonRequestTest extends TestCase
         object $expected
     ): void
     {
-        CachingService::getInstance()->store($mockedRequest, Request::class);
         $setParameters();
-        $routing = new Routing();
+        DependencyContainer::getInstance()->set(Request::class, $mockedRequest);
+        /** @var Routing $routing */
+        $routing = DependencyContainer::getInstance()->get(Routing::class);
         $routing->registerController(ExampleJsonRawRequestParameters::class);
         $dispatcher = $routing->createDispatcher($path);
 
         $actual = $dispatcher->getParameters()[0];
 
         $this->assertEquals($expected, $actual);
-        CachingService::getInstance()->flushCache();
+        DependencyContainer::getInstance()->flush();
     }
 
     public function jsonRawRequestParametersDataProvider()

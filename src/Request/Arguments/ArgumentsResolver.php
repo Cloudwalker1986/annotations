@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Request\Arguments;
 
 use Autowired\Autowired;
-use Autowired\AutowiredHandler;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -19,8 +18,6 @@ use Utils\Map;
 
 final class ArgumentsResolver
 {
-    use AutowiredHandler;
-
     #[Autowired]
     private Request $request;
 

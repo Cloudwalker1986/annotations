@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Request\Route;
 
 use Autowired\Autowired;
-use Autowired\AutowiredHandler;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
@@ -21,8 +20,6 @@ use Request\Response\Rest\ResponseBadRequest;
  */
 class RouteResolver
 {
-    use AutowiredHandler;
-
     #[Autowired]
     private ArgumentsResolver $argumentResolver;
 

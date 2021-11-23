@@ -1,25 +1,26 @@
 <?php
 declare(strict_types=1);
 
+
 namespace Configuration;
 
+
+use Autowired\Handler\CustomHandlerInterface;
 use Configuration\Attribute\Configuration;
 use ReflectionClass;
 
-trait AutowiredHandler
+class ConfigurationHandler implements CustomHandlerInterface
 {
-    use \Autowired\AutowiredHandler;
-
-    protected function handleCustomAttributes(object $class): void
+    public function handle(object $object): void
     {
-        $reflection = new ReflectionClass($class);
+        $reflection = new ReflectionClass($object);
         foreach ($reflection->getAttributes(Configuration::class) as $configuration) {
             call_user_func(
                 [
                     Handler::class,
                     'handle'
                 ],
-                $class,
+                $object,
                 $configuration->newInstance()
             );
         }
