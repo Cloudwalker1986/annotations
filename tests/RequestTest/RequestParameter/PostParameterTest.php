@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace RequestTest\RequestParameter;
 
+use Autowired\DependencyContainer;
 use PHPUnit\Framework\TestCase;
 use Request\Response\Rest\Entity\BadRequestEntity;
 use Request\Response\Rest\ResponseBadRequest;
@@ -16,6 +17,20 @@ use Utils\HasMap;
 
 class PostParameterTest extends TestCase
 {
+
+    private DependencyContainer $container;
+
+    public function setUp(): void
+    {
+        $this->container = DependencyContainer::getInstance();
+        parent::setUp();
+    }
+
+    public function tearDown(): void
+    {
+        $this->container->flush();
+        parent::tearDown();
+    }
 
     /**
      * @dataProvider dataProviderReadSingleGetParametersToSingleVariables
@@ -32,7 +47,7 @@ class PostParameterTest extends TestCase
     ): void
     {
         $setParameters();
-        $routing = new Routing();
+        $routing = $this->container->get(Routing::class);
         $routing->registerController(ExamplePostParameters::class);
         $response = $routing->dispatchRoute($requestUri);
 

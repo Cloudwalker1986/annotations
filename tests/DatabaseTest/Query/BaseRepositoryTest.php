@@ -3,30 +3,39 @@ declare(strict_types=1);
 
 namespace DatabaseTest\Query;
 
-use Autowired\Autowired;
-use Autowired\AutowiredHandler;
+use Autowired\DependencyContainer;
+use Autowired\Exception\InterfaceArgumentException;
+use Configuration\ConfigurationHandler;
+use Database\Autowired\AutowiredHandler;
 use Database\Reader\PdoReader;
 use DatabaseTest\Example\ExampleService;
 use DatabaseTest\Example\UserEntity;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 use Utils\ListCollection;
 
 class BaseRepositoryTest extends TestCase
 {
-    use AutowiredHandler;
-
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        $this->autowired();
-        parent::__construct($name, $data, $dataName);
-    }
-
-    #[Autowired]
     private PdoReader $pdoReader;
+
+    /**
+     * @throws InterfaceArgumentException
+     * @throws ReflectionException
+     */
+    public static function setUpBeforeClass(): void
+    {
+        DependencyContainer::getInstance()->addInterfaceHandler(
+            DependencyContainer::getInstance()->get(AutowiredHandler::class)
+        );
+        DependencyContainer::getInstance()->addCustomHandler(
+            DependencyContainer::getInstance()->get(ConfigurationHandler::class)
+        );
+        parent::setUpBeforeClass();
+    }
 
     protected function setUp(): void
     {
-        $this->pdoReader->getConnection()->exec(
+        $this->getPdoReader()->getConnection()->exec(
             <<<'TAG'
 CREATE TABLE IF NOT EXISTS `user` (
   `id_user` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -39,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 TAG
         );
-        $this->pdoReader->getConnection()->exec(
+        $this->getPdoReader()->getConnection()->exec(
             <<<'TAG'
 INSERT INTO `user` (`id_user`, `name`, `email`) 
     VALUES  
@@ -53,7 +62,7 @@ TAG
 
     protected function tearDown(): void
     {
-        $this->pdoReader->getConnection()->exec('DROP TABLE user');
+        $this->getPdoReader()->getConnection()->exec('DROP TABLE user');
         parent::tearDown();
     }
 
@@ -108,5 +117,14 @@ TAG
         $collection
             ->add(new UserEntity(2, 'test2', 'test2@test.de'));
         $this->assertEquals($collection, $svc->findByPagination());
+    }
+
+    private function getPdoReader(): PdoReader
+    {
+        if (empty($this->pdoReader)) {
+            $this->pdoReader = DependencyContainer::getInstance()->get(PdoReader::class);
+            $this->pdoReader->init();
+        }
+        return $this->pdoReader;
     }
 }

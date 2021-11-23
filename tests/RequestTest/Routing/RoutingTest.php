@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace RequestTest\Routing;
 
+use Autowired\DependencyContainer;
 use PHPUnit\Framework\TestCase;
 use Request\Attributes\Route;
 use Request\Response\Rest\ResponseAccepted;
@@ -21,6 +22,20 @@ use RequestTest\Routing\Example\ExampleUriEndpoint;
  */
 class RoutingTest extends TestCase
 {
+    private DependencyContainer $container;
+
+    public function setUp(): void
+    {
+        $this->container = DependencyContainer::getInstance();
+        parent::setUp();
+    }
+
+    public function tearDown(): void
+    {
+        $this->container->flush();
+        parent::tearDown();
+    }
+
     /**
      * @dataProvider dataProviderForRouteToEndpointByHttpMethod
      * @test
@@ -36,7 +51,7 @@ class RoutingTest extends TestCase
     ) {
         $setHttpMethod();
 
-        $routing = new Routing();
+        $routing = $this->container->get(Routing::class);
         $routing->registerController(ExampleHttpMethodEndpoint::class);
         $routing->registerController(ExampleUriEndpoint::class);
         $response = $routing->dispatchRoute($requestUri);

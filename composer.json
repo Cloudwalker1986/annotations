@@ -3,7 +3,7 @@
     "description": "With this annotation component you will able to developer faster and easier your application.",
     "type": "project",
     "require": {
-        "autowired/autowired": "1.4.*",
+        "autowired/autowired": "1.5.*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "ext-yaml": "*"

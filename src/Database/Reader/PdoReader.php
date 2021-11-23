@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Database\Reader;
 
-use Configuration\AutowiredHandler;
 use Autowired\Autowired;
 use Database\Parameters;
 use PDO;
@@ -12,16 +11,13 @@ use RuntimeException;
 
 class PdoReader implements ReaderInterface
 {
-    use AutowiredHandler;
-
     private PDO $connection;
 
     #[Autowired]
     private Config $config;
 
-    public function __construct()
+    public function init(): void
     {
-        $this->autowired();
         $this->connection = new PDO(
             sprintf('mysql:dbname=%s;host=%s', $this->config->getDatabase(), $this->config->getHost()),
             $this->config->getUser(),
