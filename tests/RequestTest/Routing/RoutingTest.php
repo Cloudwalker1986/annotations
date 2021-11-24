@@ -51,6 +51,7 @@ class RoutingTest extends TestCase
     ) {
         $setHttpMethod();
 
+        /** @var Routing $routing */
         $routing = $this->container->get(Routing::class);
         $routing->registerController(ExampleHttpMethodEndpoint::class);
         $routing->registerController(ExampleUriEndpoint::class);

@@ -10,6 +10,7 @@ use DateTimeInterface;
 use ReflectionClass;
 use Request\Arguments\Json\JsonResolver;
 use Request\Attributes\Json\JsonRequest;
+use Request\Attributes\Parameters\Parameter;
 use Request\Attributes\Route;
 use Request\Exceptions\InvalidParameterException;
 use Request\Request;
@@ -36,13 +37,16 @@ final class ArgumentsResolver
         foreach ($parameters as $parameter) {
             $attributes = $parameter->getAttributes();
             foreach ($attributes as $attribute) {
-                $requestParameters = $this->request->getParametersByAttributeType($attribute->newInstance());
+                /** @var Parameter $attr */
+                $attr = $attribute->newInstance();
+                $requestParameters = $this->request->getParametersByAttributeType($attr);
                 $arguments[] = $this->resolveValues(
                     $parameter,
                     $requestParameters,
                     $route,
                     $requestUri,
-                    $errorParameters
+                    $errorParameters,
+                    $attr->getAlias()
                 );
             }
         }
@@ -59,7 +63,8 @@ final class ArgumentsResolver
         array $params,
         Route $route,
         string $requestUri,
-        Map $errorMap
+        Map $errorMap,
+        ?string $alias
     ): float|array|bool|int|string|object {
         $parameterType = $parameter->getType();
         if ($parameterType === null) {
@@ -79,7 +84,8 @@ final class ArgumentsResolver
                 str_replace(' ', '', lcfirst($parameter->getName())),
                 $params,
                 $route,
-                $requestUri
+                $requestUri,
+                $alias
             );
         }
 
@@ -116,8 +122,15 @@ final class ArgumentsResolver
                     $val = $params[$jsonRequest->getAlias() ?? $property->getName()];
                     $type = $property->getType();
                 } else {
+                    $alias = null;
+                    foreach ($property->getAttributes() as $attribute) {
+                        $attr = $attribute->newInstance() ;
+                        if ($attr instanceof Parameter && $alias === null) {
+                            $alias = $attr->getAlias();
+                        }
+                    }
                     $type = $property->getType();
-                    $val = $params[$property->getName()] ?? null;
+                    $val = $params[$alias ?? $property->getName()] ?? null;
                 }
 
                 if ($val === null || $type === null) {
@@ -148,9 +161,12 @@ final class ArgumentsResolver
         string $key,
         array $params,
         Route $route,
-        string $requestUri
+        string $requestUri,
+        ?string $alias = null
     ): bool|int|array|float|string {
         $urlValue = $this->urlValue($route, $requestUri);
+
+        $key = $alias ?? $key;
 
         return match ($type) {
             'int' => (int) ($params[$key] ?? $urlValue),

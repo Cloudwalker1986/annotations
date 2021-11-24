@@ -12,7 +12,7 @@ use RuntimeException;
 
 class PdoReader implements ReaderInterface
 {
-    private PDO $connection;
+    private null|PDO $connection = null;
 
     #[Autowired]
     private Config $config;

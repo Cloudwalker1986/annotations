@@ -1,12 +1,11 @@
-<?php
-declare(strict_types=1);
+# Configuration
 
-namespace Database\Reader;
+With the annotation module **Configuration** you can specify any data object class as a configuration on the class level definition.
+In order to assign the right value from the configuration to your configuration class you need to provide to each property the attribute ```#[Value]```
 
+### Example
 
-use Configuration\Attribute\Configuration;
-use Configuration\Attribute\Value;
-
+```php 
 #[Configuration]
 class Config
 {
@@ -42,3 +41,22 @@ class Config
         return $this->host;
     }
 }
+
+class PdoReader implements ReaderInterface
+{
+    private null|PDO $connection = null;
+
+    #[Autowired]
+    private Config $config;
+
+    ....
+}
+
+```
+
+### Supported configuration types
+
+
+| Supported configuration types | 
+|-------------------------------|
+| yaml                          |  

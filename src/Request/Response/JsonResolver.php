@@ -6,6 +6,7 @@ namespace Request\Response;
 use JsonException;
 use ReflectionAttribute;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionProperty;
 use Request\Attributes\Json\JsonResponse;
 
@@ -20,9 +21,11 @@ class JsonResolver
             $jsonResponse = [
                 'status' => $response->getStatus(),
                 'payload' => $this->resolveEntity($response),
-                'pagination' => $this->resolvePagination($response)
             ];
-        } catch (\ReflectionException $e) {
+            if ($response->paginationEnabled()) {
+                $jsonResponse['pagination'] = $this->resolvePagination($response);
+            }
+        } catch (ReflectionException $e) {
             $jsonResponse = [
                 'status' => 500,
                 'payload' => [
@@ -35,7 +38,7 @@ class JsonResolver
     }
 
     /**
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     private function resolveEntity(RestResponse $response): ?array
     {

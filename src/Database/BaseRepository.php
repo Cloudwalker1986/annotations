@@ -15,8 +15,6 @@ use Utils\ListCollection;
 
 class BaseRepository
 {
-    use \Autowired\AutowiredHandler;
-
     private string $primitiveReturnType;
 
     #[Autowired(concreteClass: ReaderFactory::class, staticFunction: 'getReader')]

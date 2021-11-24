@@ -46,6 +46,7 @@ class GetParameterTest extends TestCase
     ): void
     {
         $setParameters();
+        /** @var Routing $routing */
         $routing = $this->container->get(Routing::class);
         $routing->registerController(ExampleGetParameters::class);
         $response = $routing->dispatchRoute($requestUri);
@@ -66,7 +67,7 @@ class GetParameterTest extends TestCase
                 'setParameters' => function() {
                     $_SERVER["REQUEST_METHOD"] = "GET";
                     $_GET = [
-                        'firstGetParameter' => 'hello world'
+                        'first-get-parameter' => 'hello world'
                     ];
                 }
             ],

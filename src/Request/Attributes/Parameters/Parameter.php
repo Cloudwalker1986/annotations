@@ -5,6 +5,8 @@ namespace Request\Attributes\Parameters;
 
 interface Parameter
 {
+    public function getAlias(): ?string;
+
     public function isPost(): bool;
 
     public function isGet(): bool;

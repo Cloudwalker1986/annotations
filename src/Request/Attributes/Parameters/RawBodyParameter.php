@@ -5,6 +5,12 @@ namespace Request\Attributes\Parameters;
 
 #[\Attribute(\Attribute::IS_REPEATABLE | \Attribute::TARGET_PARAMETER)]
 class RawBodyParameter implements Parameter {
+
+    public function getAlias(): ?string
+    {
+        return null;
+    }
+
     public function isPost(): bool
     {
         return false;
