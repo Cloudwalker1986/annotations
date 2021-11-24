@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace DatabaseTest\Example;
 
 use Autowired\Autowired;
-use Database\AutowiredHandler;
 use Database\EntityInterface;
 use Database\Parameters\Pagination;
 use Database\Parameters\LikeSearch;
@@ -12,8 +11,6 @@ use Utils\Collection;
 
 class ExampleService
 {
-    use AutowiredHandler;
-
     #[Autowired]
     private UserRepository $userRepository;
 

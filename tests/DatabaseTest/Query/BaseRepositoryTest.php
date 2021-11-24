@@ -3,30 +3,29 @@ declare(strict_types=1);
 
 namespace DatabaseTest\Query;
 
-use Autowired\Autowired;
-use Autowired\AutowiredHandler;
+use Autowired\DependencyContainer;
+use Autowired\Exception\InterfaceArgumentException;
+use Configuration\ConfigurationHandler;
+use Database\Autowired\AutowiredHandler;
 use Database\Reader\PdoReader;
 use DatabaseTest\Example\ExampleService;
 use DatabaseTest\Example\UserEntity;
 use PHPUnit\Framework\TestCase;
+use ReflectionException;
 use Utils\ListCollection;
 
 class BaseRepositoryTest extends TestCase
 {
-    use AutowiredHandler;
+    private DependencyContainer $container;
 
-    public function __construct(?string $name = null, array $data = [], $dataName = '')
-    {
-        $this->autowired();
-        parent::__construct($name, $data, $dataName);
-    }
-
-    #[Autowired]
     private PdoReader $pdoReader;
 
     protected function setUp(): void
     {
-        $this->pdoReader->getConnection()->exec(
+        $this->container = DependencyContainer::getInstance();
+        $this->container->addInterfaceHandler($this->container->get(AutowiredHandler::class));
+        $this->container->addCustomHandler($this->container->get(ConfigurationHandler::class));
+        $this->getPdoReader()->getConnection()->exec(
             <<<'TAG'
 CREATE TABLE IF NOT EXISTS `user` (
   `id_user` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -39,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 TAG
         );
-        $this->pdoReader->getConnection()->exec(
+        $this->getPdoReader()->getConnection()->exec(
             <<<'TAG'
 INSERT INTO `user` (`id_user`, `name`, `email`) 
     VALUES  
@@ -53,7 +52,8 @@ TAG
 
     protected function tearDown(): void
     {
-        $this->pdoReader->getConnection()->exec('DROP TABLE user');
+        $this->getPdoReader()->getConnection()->exec('DROP TABLE user');
+        $this->container->flush();
         parent::tearDown();
     }
 
@@ -63,7 +63,7 @@ TAG
      */
     public function findUserByCustomValueSearch(): void
     {
-        $svc = new ExampleService();
+        $svc = $this->container->get(ExampleService::class);
 
         $entity = $svc->findUser('test');
 
@@ -75,7 +75,7 @@ TAG
      */
     public function findUsersByCustomValueSearch(): void
     {
-        $svc = new ExampleService();
+        $svc = $this->container->get(ExampleService::class);
 
         $collection = new ListCollection();
         $collection
@@ -89,7 +89,7 @@ TAG
      */
     public function findUsersBySomeCustomSearch(): void
     {
-        $svc = new ExampleService();
+        $svc = $this->container->get(ExampleService::class);
 
         $collection = new ListCollection();
         $collection
@@ -102,11 +102,19 @@ TAG
      */
     public function geUserByPagination(): void
     {
-        $svc = new ExampleService();
+        $svc = $this->container->get(ExampleService::class);
 
         $collection = new ListCollection();
         $collection
             ->add(new UserEntity(2, 'test2', 'test2@test.de'));
         $this->assertEquals($collection, $svc->findByPagination());
+    }
+
+    private function getPdoReader(): PdoReader
+    {
+        if (empty($this->pdoReader)) {
+            $this->pdoReader = DependencyContainer::getInstance()->get(PdoReader::class);
+        }
+        return $this->pdoReader;
     }
 }

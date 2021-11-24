@@ -18,8 +18,6 @@ use Request\Route\RouteResolver;
  */
 final class Routing
 {
-    use AutowiredHandler;
-
     #[Autowired]
     private ArgumentsResolver $resolver;
 
