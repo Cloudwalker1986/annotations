@@ -11,6 +11,7 @@ use Request\Response\Rest\ResponseOk;
 use Request\Response\RestResponse;
 use Request\Routing;
 use RequestTest\RequestParameter\Examples\ExampleGetParameterEntity;
+use RequestTest\RequestParameter\Examples\ExamplePostObjectParameterEntity;
 use RequestTest\RequestParameter\Examples\ExamplePostParameters;
 use RequestTest\RequestParameter\Examples\ExampleUriParameterEntity;
 use Utils\HasMap;
@@ -84,6 +85,16 @@ class PostParameterTest extends TestCase
                 'requestUri' => '/product/1/preview',
                 'setParameters' => function() {
                     $_SERVER["REQUEST_METHOD"] = "POST";
+                }
+            ],
+            'Request with one parameter as object' => [
+                'expectedResponse' => new ResponseOk(new ExamplePostObjectParameterEntity('abc', 'def', 'ghi')),
+                'requestUri' => '/product/create',
+                'setParameters' => function() {
+                    $_SERVER["REQUEST_METHOD"] = "POST";
+                    $_POST['parameterOne'] = 'abc';
+                    $_POST['parameterTwo'] = 'def';
+                    $_POST['aliasParameter'] = 'ghi';
                 }
             ]
         ];

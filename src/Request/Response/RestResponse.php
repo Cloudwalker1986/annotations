@@ -10,4 +10,6 @@ interface RestResponse extends Response
     public function getStatus(): int;
 
     public function getEntity(): ?Entity;
+
+    public function paginationEnabled(): bool;
 }

@@ -16,11 +16,35 @@ class JsonResponseTest extends TestCase
      *
      * @throws JsonException
      */
-    public function jsonResolver(): void
+    public function jsonResolverWithoutPagination(): void
     {
         $jsonResolver = new JsonResolver();
         $response = new ResponseOk(
             new ExampleBigResponseObject('Hello', 'World', 'Nothing')
+        );
+
+        $this->assertEquals(
+            json_encode([
+                'status' => 200,
+                'payload' => [
+                    'fieldOne' => 'Hello',
+                    'fieldTwo' => 'World'
+                ],
+            ], JSON_THROW_ON_ERROR),
+            $jsonResolver->toJson($response)
+        );
+    }
+    /**
+     * @test
+     *
+     * @throws JsonException
+     */
+    public function jsonResolverWithPagination(): void
+    {
+        $jsonResolver = new JsonResolver();
+        $response = new ResponseOk(
+            new ExampleBigResponseObject('Hello', 'World', 'Nothing'),
+            true
         );
 
         $this->assertEquals(
@@ -38,5 +62,6 @@ class JsonResponseTest extends TestCase
             ], JSON_THROW_ON_ERROR),
             $jsonResolver->toJson($response)
         );
+
     }
 }

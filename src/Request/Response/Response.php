@@ -5,4 +5,5 @@ namespace Request\Response;
 
 interface Response
 {
+    public function getHtmlContent(): string;
 }

@@ -11,7 +11,7 @@ use Request\Response\RestResponse;
 class ExampleGetParameters
 {
     #[Route('/example/uri')]
-    public function myExpectedRouteWithGetParameter(#[GetParameter] string $firstGetParameter): RestResponse
+    public function myExpectedRouteWithGetParameter(#[GetParameter('first-get-parameter')] string $firstGetParameter): RestResponse
     {
         return new ResponseOk(new ExampleGetParameterEntity($firstGetParameter));
     }

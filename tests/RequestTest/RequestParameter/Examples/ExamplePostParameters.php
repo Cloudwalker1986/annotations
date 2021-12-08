@@ -29,4 +29,16 @@ class ExamplePostParameters
     {
         return new ResponseOk(new ExampleGetParametersEntity($firstParameter, $secondParameter));
     }
+
+    #[Route('/product/create', Route::HTTP_METHOD_POST)]
+    public function objectParameterAssignmentFromPostRequest(
+        #[PostParameter] ExamplePostObjectParameter $params
+    ): RestResponse
+    {
+        return new ResponseOk(new ExamplePostObjectParameterEntity(
+            $params->getParameterOne(),
+            $params->getParameterTwo(),
+            $params->getParameterAlias()
+        ));
+    }
 }

@@ -9,8 +9,8 @@ class ResponseOk extends RestResponseAbstract
 {
     protected int $status = 200;
 
-    public function __construct(Entity $entity)
+    public function __construct(Entity $entity, bool $paginationEnabled = false)
     {
-        parent::__construct($entity);
+        parent::__construct($entity, $paginationEnabled);
     }
 }

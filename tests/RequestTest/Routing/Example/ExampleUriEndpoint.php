@@ -13,7 +13,7 @@ use Request\Response\Rest\ResponseNoContent;
 class ExampleUriEndpoint
 {
     #[Route("/product/\d/edit", Route::HTTP_METHOD_PATCH)]
-    public function editTheProduct()
+    public function editTheProduct(): ResponseNoContent
     {
         return new ResponseNoContent();
     }

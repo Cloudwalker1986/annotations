@@ -23,7 +23,7 @@ class ExampleHttpMethodEndpoint
     }
 
     #[Route("/", Route::HTTP_METHOD_POST)]
-    public function aDifferentEndpointWithNoParamters(): RestResponse
+    public function aDifferentEndpointWithNoParameters(): RestResponse
     {
         return new ResponseCreated();
     }
