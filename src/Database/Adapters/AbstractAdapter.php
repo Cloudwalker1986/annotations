@@ -1,21 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace Database\Reader;
+namespace Database\Adapters;
 
 use Autowired\Attribute\AfterConstruct;
-use Autowired\Autowired;
 use Database\Parameters;
 use PDO;
 use PDOStatement;
 use RuntimeException;
 
-class PdoReader implements ReaderInterface
-{
-    private null|PDO $connection = null;
 
-    #[Autowired]
-    private Config $config;
+class AbstractAdapter
+{
+    protected ConnectionInterface $config;
+
+    private null|PDO $connection = null;
 
     #[AfterConstruct]
     public function init(): void
@@ -27,38 +26,11 @@ class PdoReader implements ReaderInterface
         );
     }
 
-    public function getConnection(): \PDO
+    public function getConnection(): null|PDO
     {
-         return $this->connection;
+        return $this->connection;
     }
-
-    public function fetchRow(string $query, array $bindingParameters): array
-    {
-        $stmt = $this->getPreparedStatement($query, $bindingParameters);
-
-        $data = $stmt->fetch(mode: PDO::FETCH_ASSOC);
-
-        if (!$data) {
-            return [];
-        }
-
-        return $data;
-    }
-
-    public function fetchAll(string $query, array $bindingParameters): array
-    {
-        $stmt = $this->getPreparedStatement($query, $bindingParameters);
-
-        $data = $stmt->fetchAll(mode: PDO::FETCH_ASSOC);
-
-        if (!$data) {
-            return [];
-        }
-
-        return $data;
-    }
-
-    private function getPreparedStatement(string $query, array $bindingParameters): PDOStatement
+    protected function getPreparedStatement(string $query, array $bindingParameters): PDOStatement
     {
         if ($this->connection === null) {
             throw new RuntimeException('Connection to database is not established.');
@@ -76,7 +48,7 @@ class PdoReader implements ReaderInterface
         return $stmt;
     }
 
-    private function bindParameters(
+    protected function bindParameters(
         array $bindingParameters,
         bool|PDOStatement $stmt,
         string $debugQuery
@@ -114,7 +86,7 @@ class PdoReader implements ReaderInterface
         }
     }
 
-    private function applyPagination(array $bindingParameters, string $query): string
+    protected function applyPagination(array $bindingParameters, string $query): string
     {
         foreach ($bindingParameters as $value) {
             if ($value instanceof Parameters\Pagination) {

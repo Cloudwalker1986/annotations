@@ -14,6 +14,9 @@ class ExampleService
     #[Autowired]
     private UserRepository $userRepository;
 
+    #[Autowired]
+    private UserTwoRepository $userTwoRepository;
+
     public function findUser(string $name): ?EntityInterface
     {
         return $this->userRepository->findMyUserByName($name);
@@ -40,5 +43,15 @@ class ExampleService
         $pagination = new Pagination(1,1);
 
         return $this->userRepository->findByPagination($pagination);
+    }
+
+    public function persistsUser(UserEntity $user): UserEntity|EntityInterface
+    {
+        return $this->userTwoRepository->persists($user);
+    }
+
+    public function deleteUser(InvalidEntity|UserEntity $user): bool
+    {
+        return $this->userTwoRepository->delete($user);
     }
 }

@@ -3,13 +3,11 @@ declare(strict_types=1);
 
 namespace Configuration;
 
-use Configuration\Attribute\Configuration;
 use Configuration\Attribute\Value;
-use Database\Reader\Config;
 
 class Handler
 {
-    public static function handle(Config $config, Configuration $configuration): void
+    public static function handle(object $config, Config $configuration): void
     {
         $reflection = new \ReflectionClass($config);
         foreach ($reflection->getProperties() as $property) {
@@ -17,10 +15,8 @@ class Handler
 
                 /** @var Value $value */
                 $value = $attribute->newInstance();
-                $property->setAccessible(true);
                 $property->setValue($config, $configuration->getValueByPath($value));
             }
         }
-
     }
 }

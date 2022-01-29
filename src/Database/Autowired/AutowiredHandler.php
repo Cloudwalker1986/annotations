@@ -6,8 +6,10 @@ namespace Database\Autowired;
 use Autowired\Autowired;
 use Autowired\Handler\InterfaceHandler;
 use Database\Attributes\Query;
+use Database\CrudRepositoryInterface;
 use Database\FunctionSignature;
 use ReflectionClass;
+use ReflectionMethod;
 
 class AutowiredHandler implements InterfaceHandler
 {
@@ -34,7 +36,11 @@ class AutowiredHandler implements InterfaceHandler
     {
         $ds = DIRECTORY_SEPARATOR;
 
-        $skeleton = file_get_contents(realpath(__DIR__ . $ds . '..' . $ds .'Tmp' . $ds . 'Skeleton.txt'));
+        if (in_array(CrudRepositoryInterface::class, $typed->getInterfaceNames())) {
+            $skeleton = file_get_contents(realpath(__DIR__ . $ds . '..' . $ds .'Tmp' . $ds . 'CrudSkeleton.txt'));
+        } else {
+            $skeleton = file_get_contents(realpath(__DIR__ . $ds . '..' . $ds .'Tmp' . $ds . 'BaseSkeleton.txt'));
+        }
 
         $className = 'Database\\Tmp\\Concrete\\%sRepository';
 
@@ -87,7 +93,6 @@ class AutowiredHandler implements InterfaceHandler
         return $className;
     }
 
-
     private function renderBodyContent(ReflectionClass $interfaceReflection, array &$use): string
     {
         $body = '';
@@ -100,34 +105,7 @@ class AutowiredHandler implements InterfaceHandler
                 if (!in_array($returnType, $use, true)) {
                     $use[] = $returnType;
                 }
-                $parameters = '';
-                $parameterVariable = '';
-
-                foreach ($method->getParameters() as $parameter) {
-                    $parameterKey = $parameter->getType();
-                    if (in_array($parameter->getType(), $this->reservedTypes, true)) {
-                        $parameters .= sprintf(
-                            '%s $%s,',
-                            $parameterKey,
-                            $parameter->getName()
-                        );
-                    } else {
-                        $name = $parameter->getType()->getName();
-
-                        if (!in_array($name, $use, true) && !in_array($name, $this->scalarTypes, true)) {
-                            $use[] = $name;
-                        }
-                        $parameterObject = explode('\\', $parameter->getType()->getName());
-                        $parameterKey = end($parameterObject);
-                        $parameters .= sprintf(
-                            '%s $%s,',
-                            $parameterKey,
-                            $parameter->getName()
-                        );
-                    }
-
-                    $parameterVariable .= '\'' . lcfirst($parameter->getName()) . '\' => $' . $parameter->getName() . ',';
-                }
+                [$parameters, $parameterVariable, $use] = $this->resolveParameters($method, $use);
 
                 $returnNameExploded = explode('\\', $returnType);
 
@@ -147,6 +125,33 @@ class AutowiredHandler implements InterfaceHandler
         }
 
         return $body;
+    }
+
+    private function resolveParameters(ReflectionMethod $method, array $use): array
+    {
+        $parameters = '';
+        $parameterVariable = '';
+        foreach ($method->getParameters() as $parameter) {
+            $parameterKey = $parameter->getType();
+            if (!in_array($parameter->getType(), $this->reservedTypes, true)) {
+                $name = $parameter->getType()->getName();
+
+                if (!in_array($name, $use, true) && !in_array($name, $this->scalarTypes, true)) {
+                    $use[] = $name;
+                }
+                $parameterObject = explode('\\', $parameter->getType()->getName());
+                $parameterKey = end($parameterObject);
+            }
+            $parameters .= sprintf(
+                '%s $%s,',
+                $parameterKey,
+                $parameter->getName()
+            );
+
+            $parameterVariable .= '\'' . lcfirst($parameter->getName()) . '\' => $' . $parameter->getName() . ',';
+        }
+
+        return [$parameters, $parameterVariable, $use];
     }
 
     private function getFunctionTemplate(FunctionSignature $functionSignature): string

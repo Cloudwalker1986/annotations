@@ -1,25 +1,26 @@
 <?php
 declare(strict_types=1);
 
-namespace Database\Reader;
+namespace Database\Adapters\Reader;
 
 
 use Configuration\Attribute\Configuration;
 use Configuration\Attribute\Value;
+use Database\Adapters\ConnectionInterface;
 
 #[Configuration]
-class Config
+class ConnectionConfig implements ConnectionInterface
 {
-    #[Value('dataSource.mysql.password')]
+    #[Value('dataSource.reader.password')]
     private string $password;
 
-    #[Value('dataSource.mysql.user')]
+    #[Value('dataSource.reader.user')]
     private string $user;
 
-    #[Value('dataSource.mysql.database')]
+    #[Value('dataSource.reader.database')]
     private string $database;
 
-    #[Value('dataSource.mysql.host')]
+    #[Value('dataSource.reader.host')]
     private string $host;
 
     public function getPassword(): string

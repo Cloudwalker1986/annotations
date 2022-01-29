@@ -8,7 +8,7 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 class Column
 {
-    public function __construct(private string $column) {}
+    public function __construct(private readonly string $column) {}
 
     public function getColumn(): string
     {

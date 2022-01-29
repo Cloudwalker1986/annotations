@@ -4,8 +4,6 @@ declare(strict_types=1);
 namespace Request;
 
 use Autowired\Autowired;
-use Autowired\AutowiredHandler;
-use Request\Arguments\ArgumentsResolver;
 use Request\Attributes\Route;
 use Request\Response\Response;
 use Request\Response\RestResponse;
@@ -18,9 +16,6 @@ use Request\Route\RouteResolver;
  */
 final class Routing
 {
-    #[Autowired]
-    private ArgumentsResolver $resolver;
-
     #[Autowired]
     private RouteResolver $routeResolver;
 

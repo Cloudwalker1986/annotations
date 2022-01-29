@@ -13,7 +13,7 @@ use Request\Routing;
 use RequestTest\RequestParameter\Examples\ExampleGetParameters;
 use RequestTest\RequestParameter\Examples\ExampleGetParameterEntity;
 use RequestTest\RequestParameter\Examples\ExampleUriParameterEntity;
-use Utils\HasMap;
+use Utils\HashMap;
 
 class GetParameterTest extends TestCase
 {
@@ -56,7 +56,7 @@ class GetParameterTest extends TestCase
 
     public function dataProviderReadSingleGetParametersToSingleVariables(): array
     {
-        $errorHashMap = new HasMap();
+        $errorHashMap = new HashMap();
 
         $errorHashMap->add('firstGetParameter','Field is required and can´t be empty');
 
