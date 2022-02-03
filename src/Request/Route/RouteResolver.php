@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Request\Route;
 
 use Autowired\Autowired;
+use Autowired\DependencyContainer;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
@@ -23,6 +24,9 @@ class RouteResolver
     #[Autowired]
     private ArgumentsResolver $argumentResolver;
 
+    #[Autowired]
+    private DependencyContainer $container;
+
     public function resolveMatchedRoute(
         \ReflectionMethod $method,
         \ReflectionAttribute $routeAnnotation,
@@ -38,7 +42,7 @@ class RouteResolver
 
         try {
             $arguments = $this->argumentResolver->resolve($method->getParameters(), $route, $requestUri);
-            $dispatcher = new Dispatcher($controllerReflection, $method->getName(), $arguments);
+            $dispatcher = new Dispatcher($controllerReflection, $method->getName(), $arguments, $this->container);
             return $dispatcher->dispatch();
         } catch (InvalidParameterException $invalidParameterException) {
             return new ResponseBadRequest(
@@ -94,7 +98,7 @@ class RouteResolver
 
         try {
             $arguments = $this->argumentResolver->resolve($method->getParameters(), $route, $requestUri);
-            return new Dispatcher($controllerReflection, $method->getName(), $arguments);
+            return new Dispatcher($controllerReflection, $method->getName(), $arguments, $this->container);
         } catch (InvalidParameterException $invalidParameterException) {
             // implementation for dispatcher to error route?
         }

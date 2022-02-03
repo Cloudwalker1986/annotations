@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace RequestTest\Routing\Example;
 
+use Autowired\Autowired;
 use Request\Attributes\Route;
-use Request\Response\Rest\Entity;
 use Request\Response\Rest\ResponseAccepted;
 use Request\Response\Rest\ResponseCreated;
-use Request\Response\Rest\ResponseOk;
 use Request\Response\RestResponse;
 
 /**
@@ -16,10 +15,13 @@ use Request\Response\RestResponse;
  */
 class ExampleHttpMethodEndpoint
 {
+    #[Autowired]
+    private ExampleService $service;
+
     #[Route("/")]
     public function endpointWithNoParameters(): RestResponse
     {
-        return new ResponseOk(new ExampleHttpMethodEntity());
+        return $this->service->render();
     }
 
     #[Route("/", Route::HTTP_METHOD_POST)]
