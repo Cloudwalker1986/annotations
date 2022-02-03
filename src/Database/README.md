@@ -34,10 +34,11 @@ interface UserRepository
 
 ## Additional attribute
 
-The database module implemented a  ```#[Column]``` attribute where you can define of which php class property is mapped to which table column
+The database module implemented a  ```#[Column]``` attribute where you can define of which php class property is mapped to which table column. By default, the property name will be used to identify the column of the table 
 
-### Query parameters
-| Parameter | type   | Required | Description                    | 
-|-----------|--------|----------|--------------------------------|
-| column    | string | yes      | The name of the table column   |
+### Entity attributes
+| Attribute   | type   | Required | Description                          | 
+|-------------|--------|----------|--------------------------------------|
+| PrimaryKey  | -      | yes      | Define the primary key of the entity |
+| column      | string | yes      | The name of the table column         |
 

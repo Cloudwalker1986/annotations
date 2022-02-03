@@ -6,11 +6,11 @@ namespace Database;
 final class FunctionSignature
 {
     public function __construct(
-        private string $methodName,
-        private string $returnParam,
-        private string $queryValue,
-        private string $parameters,
-        private string $parameterVariable
+        private readonly string $methodName,
+        private readonly string $returnParam,
+        private readonly string $queryValue,
+        private readonly string $parameters,
+        private readonly string $parameterVariable
     ) {}
 
     public function getMethodName(): string

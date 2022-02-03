@@ -14,7 +14,7 @@ use RequestTest\Example\ExampleJsonRawRequestParameters;
 use RequestTest\Example\RootCollectionObject;
 use RequestTest\Example\RootMapObject;
 use RequestTest\Example\SubObjectOne;
-use Utils\HasMap;
+use Utils\HashMap;
 use Utils\ListCollection;
 
 class JsonRequestTest extends TestCase
@@ -92,7 +92,7 @@ class JsonRequestTest extends TestCase
         $subObjOne = new SubObjectOne('SubObjectOneFieldOne', 'SubObjectOneFieldTwo');
         $subObjTwo = new SubObjectOne('SubObjectTwoFieldOne', 'SubObjectTwoFieldTwo');
         $list = new ListCollection();
-        $hasMap = new HasMap();
+        $hasMap = new HashMap();
 
         $list->add($subObjOne)->add($subObjTwo);
         $hasMap->add('mapFieldOne', $subObjOne)->add('mapFieldTwo', $subObjTwo);

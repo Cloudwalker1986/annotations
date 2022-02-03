@@ -7,9 +7,8 @@ use Database\Attributes\Table\Column;
 use Database\Attributes\Table\PrimaryKey;
 use Database\EntityInterface;
 
-class UserEntity implements EntityInterface
+class InvalidEntity implements EntityInterface
 {
-    #[PrimaryKey]
     #[Column('id_user')]
     private ?int $userId;
 
@@ -38,4 +37,5 @@ class UserEntity implements EntityInterface
     {
         return $this->email;
     }
+
 }

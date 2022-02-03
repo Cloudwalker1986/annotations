@@ -4,10 +4,12 @@ declare(strict_types=1);
 namespace Database;
 
 use Autowired\Autowired;
+use Database\Adapters\Reader\ReaderFactory;
+use Database\Adapters\Reader\ReaderAdapterInterface;
+use Database\Adapters\Writer\WriterAdapterInterface;
+use Database\Adapters\Writer\WriterFactory;
 use Database\Attributes\Repository;
 use Database\Attributes\Table\Column;
-use Database\Reader\ReaderFactory;
-use Database\Reader\ReaderInterface;
 use ReflectionClass;
 use RuntimeException;
 use Utils\Collection;
@@ -17,14 +19,17 @@ class BaseRepository
 {
     private string $primitiveReturnType;
 
-    #[Autowired(concreteClass: ReaderFactory::class, staticFunction: 'getReader')]
-    protected ReaderInterface $reader;
+    #[Autowired(concreteClass: ReaderFactory::class, staticFunction: 'getReaderAdapter')]
+    protected ReaderAdapterInterface $readerAdapter;
+
+    #[Autowired(concreteClass: WriterFactory::class, staticFunction: 'getWriterAdapter')]
+    protected WriterAdapterInterface $writerAdapter;
 
     protected function handleQuerySingleEntity(string $query, array $parameters): ?EntityInterface
     {
         $repository = $this->getRepositoryAttribute();
 
-        $data = $this->reader->fetchRow($this->buildSelect($query, $repository), $parameters);
+        $data = $this->readerAdapter->fetchRow($this->buildSelect($query, $repository), $parameters);
 
         $repositoryEntity = $repository->getEntity();
 
@@ -37,7 +42,7 @@ class BaseRepository
     {
         $repository = $this->getRepositoryAttribute();
 
-        $dbRecords = $this->reader->fetchAll($this->buildSelect($query, $repository), $parameters);
+        $dbRecords = $this->readerAdapter->fetchAll($this->buildSelect($query, $repository), $parameters);
 
         $repositoryEntity = $repository->getEntity();
 
@@ -51,12 +56,26 @@ class BaseRepository
         return $collection;
     }
 
-    private function getRepositoryAttribute(): Repository
+    protected function getWriterAdapter(): WriterAdapterInterface
+    {
+        return $this->writerAdapter;
+    }
+
+    protected function getRepositoryAttribute(): Repository
     {
         $reflection = new ReflectionClass($this);
 
-        $usedInterface = $reflection->getInterfaces();
-        $repositoryAttribute = reset($usedInterface)->getAttributes(Repository::class)[0] ?? null;
+        $interfaces = $reflection->getInterfaces();
+
+        $repositoryAttribute = null;
+
+        foreach ($interfaces as $usedInterface) {
+            $repositoryAttribute = $usedInterface->getAttributes(Repository::class)[0] ?? null;
+            if ($repositoryAttribute === null) {
+                continue;
+            }
+            break;
+        }
 
         if ($repositoryAttribute === null) {
             throw new RuntimeException('Invalid repository definition for entity class');

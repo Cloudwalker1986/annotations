@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Utils;
 
-class HasMap implements Map
+class HashMap implements Map
 {
     private array $map = [];
 
@@ -19,6 +19,8 @@ class HasMap implements Map
             throw new \InvalidArgumentException(
                 sprintf('Undefined map index "%s"', $key));
         }
+
+        return $this->map[$key];
     }
 
     public function count(): int
@@ -40,6 +42,4 @@ class HasMap implements Map
     {
         $this->map = [];
     }
-
-
 }

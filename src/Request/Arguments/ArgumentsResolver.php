@@ -4,17 +4,23 @@ declare(strict_types=1);
 namespace Request\Arguments;
 
 use Autowired\Autowired;
+use Autowired\DependencyContainer;
+use Autowired\Exception\InterfaceArgumentException;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
+use JsonException;
 use ReflectionClass;
+use ReflectionException;
+use ReflectionParameter;
 use Request\Arguments\Json\JsonResolver;
 use Request\Attributes\Json\JsonRequest;
 use Request\Attributes\Parameters\Parameter;
 use Request\Attributes\Route;
 use Request\Exceptions\InvalidParameterException;
 use Request\Request;
-use Utils\HasMap;
+use Throwable;
+use Utils\HashMap;
 use Utils\Map;
 
 final class ArgumentsResolver
@@ -25,14 +31,19 @@ final class ArgumentsResolver
     #[Autowired]
     private jsonResolver $jsonResolver;
 
+    #[Autowired(concreteClass: DependencyContainer::class, staticFunction: 'getInstance')]
+    private DependencyContainer $container;
+
     /**
+     * @throws InterfaceArgumentException
      * @throws InvalidArgumentDefinitionException
-     * @throws \JsonException
+     * @throws JsonException
+     * @throws ReflectionException
      */
     public function resolve(array $parameters, Route $route, string $requestUri): array
     {
         $arguments = [];
-        $errorParameters = new HasMap();
+        $errorParameters = new HashMap();
 
         foreach ($parameters as $parameter) {
             $attributes = $parameter->getAttributes();
@@ -58,8 +69,13 @@ final class ArgumentsResolver
         return $arguments;
     }
 
+    /**
+     * @throws InterfaceArgumentException
+     * @throws InvalidArgumentDefinitionException
+     * @throws ReflectionException
+     */
     private function resolveValues(
-        \ReflectionParameter $parameter,
+        ReflectionParameter $parameter,
         array $params,
         Route $route,
         string $requestUri,
@@ -96,9 +112,13 @@ final class ArgumentsResolver
         return $object;
     }
 
-    private function handleObjectValues(string $object, array $params)
+    /**
+     * @throws InterfaceArgumentException
+     * @throws ReflectionException
+     */
+    private function handleObjectValues(string $object, array $params): object
     {
-        $object = new $object();
+        $object = $this->container->get($object);
 
         try {
             $reflection = new ReflectionClass($object);
@@ -146,11 +166,10 @@ final class ArgumentsResolver
                     DateTime::class => new DateTime($val),
                     DateTimeImmutable::class, DateTimeInterface::class => new DateTimeImmutable($val)
                 };
-                $property->setAccessible(true);
                 $property->setValue($object, $value);
             }
 
-        } catch (\ReflectionException | \Throwable $e) {
+        } catch (ReflectionException | Throwable $e) {
         }
 
         return $object;
@@ -182,14 +201,12 @@ final class ArgumentsResolver
         };
     }
 
-    private function urlValue(Route $route, string $requestUri)
+    private function urlValue(Route $route, string $requestUri): false|string
     {
-        $matches = [];
         $pattern = sprintf('/^%s$/', str_replace('/', '\\/', $route->getPath()));
         preg_match(
             $pattern,
-            $requestUri,
-            $matches
+            $requestUri
         );
 
         //check if we can use this really!

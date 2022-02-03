@@ -1,6 +1,13 @@
 dataSource:
-  mysql:
+  reader:
     password: ''
     user: 'root'
     database: 'db_test'
-    host: 127.0.0.1
+    host: database.devbox.local
+  writer:
+    password: ''
+    user: 'root'
+    database: 'db_test'
+    host: database.devbox.local
+  adapter:
+    type: "PDO"

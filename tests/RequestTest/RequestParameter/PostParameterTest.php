@@ -14,7 +14,7 @@ use RequestTest\RequestParameter\Examples\ExampleGetParameterEntity;
 use RequestTest\RequestParameter\Examples\ExamplePostObjectParameterEntity;
 use RequestTest\RequestParameter\Examples\ExamplePostParameters;
 use RequestTest\RequestParameter\Examples\ExampleUriParameterEntity;
-use Utils\HasMap;
+use Utils\HashMap;
 
 class PostParameterTest extends TestCase
 {
@@ -57,7 +57,7 @@ class PostParameterTest extends TestCase
 
     public function dataProviderReadSingleGetParametersToSingleVariables(): array
     {
-        $errorHashMap = new HasMap();
+        $errorHashMap = new HashMap();
 
         $errorHashMap->add('firstPostParameter','Field is required and can´t be empty');
 

@@ -6,7 +6,7 @@ namespace Request\Arguments\Json;
 use ReflectionProperty;
 use Request\Attributes\Json\JsonRequest;
 use Utils\Collection;
-use Utils\HasMap;
+use Utils\HashMap;
 use Utils\ListCollection;
 use Utils\Map;
 
@@ -30,7 +30,7 @@ class JsonResolver
                 $val->add($callback($type, $value));
             }
         } elseif ($property->getType()->getName() === Map::class) {
-            $val = new HasMap();
+            $val = new HashMap();
             foreach ($params[$jsonRequest->getAlias() ?? $property->getName()] as $key =>  $value) {
                 $callback($type, $value);
                 $val->add($key, $callback($type, $value));

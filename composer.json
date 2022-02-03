@@ -7,7 +7,8 @@
         "autowired/autowired": "2.0.*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
-        "ext-yaml": "*"
+        "ext-yaml": "*",
+        "ext-mysqli": "*"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",

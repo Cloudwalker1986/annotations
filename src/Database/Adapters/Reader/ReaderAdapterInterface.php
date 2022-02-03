@@ -1,13 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace Database\Reader;
+namespace Database\Adapters\Reader;
 
-interface ReaderInterface
+use mysqli;
+use PDO;
+
+interface ReaderAdapterInterface
 {
     public function fetchRow(string $query, array $bindingParameters);
 
     public function fetchAll(string $query, array $bindingParameters);
 
-    public function getConnection(): \PDO;
+    public function getConnection(): null|PDO|Mysqli;
 }

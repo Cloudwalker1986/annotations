@@ -6,9 +6,11 @@ namespace DatabaseTest\Query;
 use Autowired\DependencyContainer;
 use Autowired\Exception\InterfaceArgumentException;
 use Configuration\ConfigurationHandler;
+use Database\Adapters\Reader\PdoReaderAdapter;
+use Database\Attributes\Table\Exception\MissingPrimaryKeyException;
 use Database\Autowired\AutowiredHandler;
-use Database\Reader\PdoReader;
 use DatabaseTest\Example\ExampleService;
+use DatabaseTest\Example\InvalidEntity;
 use DatabaseTest\Example\UserEntity;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
@@ -18,7 +20,7 @@ class BaseRepositoryTest extends TestCase
 {
     private DependencyContainer $container;
 
-    private PdoReader $pdoReader;
+    private PdoReaderAdapter $pdoReader;
 
     protected function setUp(): void
     {
@@ -63,6 +65,7 @@ TAG
      */
     public function findUserByCustomValueSearch(): void
     {
+        /** @var ExampleService $svc */
         $svc = $this->container->get(ExampleService::class);
 
         $entity = $svc->findUser('test');
@@ -75,6 +78,7 @@ TAG
      */
     public function findUsersByCustomValueSearch(): void
     {
+        /** @var ExampleService $svc */
         $svc = $this->container->get(ExampleService::class);
 
         $collection = new ListCollection();
@@ -89,6 +93,7 @@ TAG
      */
     public function findUsersBySomeCustomSearch(): void
     {
+        /** @var ExampleService $svc */
         $svc = $this->container->get(ExampleService::class);
 
         $collection = new ListCollection();
@@ -100,8 +105,9 @@ TAG
     /**
      * @test
      */
-    public function geUserByPagination(): void
+    public function getUserByPagination(): void
     {
+        /** @var ExampleService $svc */
         $svc = $this->container->get(ExampleService::class);
 
         $collection = new ListCollection();
@@ -110,10 +116,53 @@ TAG
         $this->assertEquals($collection, $svc->findByPagination());
     }
 
-    private function getPdoReader(): PdoReader
+    /**
+     * @throws InterfaceArgumentException
+     * @throws ReflectionException
+     *
+     * @test
+     */
+    public function insertAndDeleteUser(): void
+    {
+        /** @var ExampleService $svc */
+        $svc = $this->container->get(ExampleService::class);
+
+        $userToCreate = new UserEntity(name: 'user persisted', email: 'persisted@test.de');
+
+        $user = $svc->persistsUser($userToCreate);
+
+        $this->assertNotNull($user->getUserId());
+        $this->assertNotEquals($user->getUserId(), $userToCreate->getUserId());
+
+        $this->assertNotNull($svc->findUser('user persisted'));
+        $svc->deleteUser($user);
+        $this->assertEquals(new UserEntity(), $svc->findUser('user persisted'));
+    }
+
+    /**
+     * @throws InterfaceArgumentException
+     * @throws ReflectionException
+     *
+     * @test
+     */
+    public function deleteUserInvalidEntity(): void
+    {
+        $this->expectException(MissingPrimaryKeyException::class);
+        $this->expectErrorMessage('Entity "DatabaseTest\Example\InvalidEntity" has no defined primary key attribute');
+        $this->expectExceptionCode(1);
+
+        /** @var ExampleService $svc */
+        $svc = $this->container->get(ExampleService::class);
+
+        $userToCreate = new InvalidEntity();
+
+        $svc->deleteUser($userToCreate);
+    }
+
+    private function getPdoReader(): PdoReaderAdapter
     {
         if (empty($this->pdoReader)) {
-            $this->pdoReader = DependencyContainer::getInstance()->get(PdoReader::class);
+            $this->pdoReader = DependencyContainer::getInstance()->get(PdoReaderAdapter::class);
         }
         return $this->pdoReader;
     }
