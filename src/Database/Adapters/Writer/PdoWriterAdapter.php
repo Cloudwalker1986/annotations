@@ -11,9 +11,6 @@ use Throwable;
 
 class PdoWriterAdapter extends AbstractAdapter implements WriterAdapterInterface
 {
-    #[Autowired(concreteClass: ConnectionConfig::class)]
-    protected ConnectionInterface $config;
-
     /**
      * @throws Throwable
      */

@@ -117,6 +117,10 @@ class CrudRepository extends BaseRepository implements CrudRepositoryInterface
         $data = [];
 
         foreach ($entityReflection->getProperties() as $reflectionProperty) {
+            $value = $reflectionProperty->getValue($entity);
+            if (empty($value)) {
+                continue;
+            }
 
             $columns = $reflectionProperty->getAttributes(Column::class);
             $key = $reflectionProperty->getName();
@@ -127,9 +131,6 @@ class CrudRepository extends BaseRepository implements CrudRepositoryInterface
 
                 $key = $column->getColumn();
             }
-
-            $reflectionProperty->setAccessible(true);
-            $value = $reflectionProperty->getValue($entity);
             $data[$key] = $value;
         }
 

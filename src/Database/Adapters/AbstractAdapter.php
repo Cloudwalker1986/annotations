@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Database\Adapters;
 
 use Autowired\Attribute\AfterConstruct;
+use Autowired\Autowired;
+use Database\Adapters\Reader\ConnectionConfig;
 use Database\Parameters;
 use PDO;
 use PDOStatement;
@@ -12,6 +14,7 @@ use RuntimeException;
 
 class AbstractAdapter
 {
+    #[Autowired(concreteClass: ConnectionConfig::class)]
     protected ConnectionInterface $config;
 
     private null|PDO $connection = null;
