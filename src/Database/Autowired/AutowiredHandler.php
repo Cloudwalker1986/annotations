@@ -47,6 +47,7 @@ class AutowiredHandler implements InterfaceHandler
         $use = [$typed->getName()];
 
         $name = $typed->getName();
+
         $classNameExploded = explode('\\', $name);
         $interfaceName = end($classNameExploded);
         $hash = substr(
