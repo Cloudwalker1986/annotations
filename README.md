@@ -1,5 +1,5 @@
 # Annotations
-This annotation component will help you to developer faster and easier your application.
+This annotation component will help you to develop faster and easier your application.
 
 This component is still under development (alpha version)
 
@@ -13,4 +13,5 @@ This component is still under development (alpha version)
 
 # Current Features under development
 
--
+- Query Performance profiler
+- add mysqli support for Database
