@@ -4,10 +4,8 @@ declare(strict_types=1);
 namespace Database\Adapters\Reader;
 use Database\Adapters\AbstractAdapter;
 use PDO;
-use PDOStatement;
-use RuntimeException;
 
-class PdoReaderAdapter extends AbstractAdapter implements ReaderAdapterInterface
+class MysqliReaderAdapter extends AbstractAdapter implements ReaderAdapterInterface
 {
     public function fetchRow(string $query, array $bindingParameters): array
     {

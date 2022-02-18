@@ -7,6 +7,7 @@ use Autowired\Attribute\AfterConstruct;
 use Autowired\Autowired;
 use Database\Adapters\Reader\ConnectionConfig;
 use Database\Parameters;
+use mysqli;
 use PDO;
 use PDOStatement;
 use RuntimeException;
@@ -17,7 +18,7 @@ class AbstractAdapter
     #[Autowired(concreteClass: ConnectionConfig::class)]
     protected ConnectionInterface $config;
 
-    private null|PDO $connection = null;
+    private null|PDO|mysqli $connection = null;
 
     #[AfterConstruct]
     public function init(): void
@@ -33,18 +34,19 @@ class AbstractAdapter
     {
         return $this->connection;
     }
-    protected function getPreparedStatement(string $query, array $bindingParameters): PDOStatement
+
+    protected function getPreparedStatement(string $query, array $bindParameters): PDOStatement|mysqli
     {
         if ($this->connection === null) {
             throw new RuntimeException('Connection to database is not established.');
         }
 
-        $query = $this->applyPagination($bindingParameters, $query);
+        $query = $this->applyPagination($bindParameters, $query);
 
         $stmt = $this->connection->prepare($query);
         $debugQuery = $query;
 
-        $this->bindParameters($bindingParameters, $stmt, $debugQuery);
+        $this->bindParameters($bindParameters, $stmt, $debugQuery);
 
         $stmt->execute();
 
@@ -52,12 +54,12 @@ class AbstractAdapter
     }
 
     protected function bindParameters(
-        array $bindingParameters,
+        array $bindParameters,
         bool|PDOStatement $stmt,
         string $debugQuery
     ): void
     {
-        foreach ($bindingParameters as $key => $value) {
+        foreach ($bindParameters as $key => $value) {
             if ($value instanceof Parameters\Pagination) {
                 continue;
             }
@@ -89,9 +91,9 @@ class AbstractAdapter
         }
     }
 
-    protected function applyPagination(array $bindingParameters, string $query): string
+    protected function applyPagination(array $bindParameters, string $query): string
     {
-        foreach ($bindingParameters as $value) {
+        foreach ($bindParameters as $value) {
             if ($value instanceof Parameters\Pagination) {
                 $query .= sprintf(' LIMIT %d OFFSET %d', $value->getLimit(), $value->getOffset());
             }

@@ -42,3 +42,8 @@ The database module implemented a  ```#[Column]``` attribute where you can defin
 | PrimaryKey  | -      | yes      | Define the primary key of the entity |
 | column      | string | yes      | The name of the table column         |
 
+
+## Supported database adapter
+
+- PDO
+- mysqli

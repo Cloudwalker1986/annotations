@@ -26,6 +26,8 @@ class ReaderFactory
 
         if (SupportedAdapters::isPdo($adapterConfig)) {
             $adapter = $container->get(PdoReaderAdapter::class);
+        } elseif (SupportedAdapters::isMysqli($adapterConfig)) {
+            $adapter = $container->get(MysqliReaderAdapter::class);
         }
 
         if (!($adapter instanceof ReaderAdapterInterface)) {
