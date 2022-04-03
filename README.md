@@ -16,4 +16,3 @@ This component is still under development (alpha version)
 # Current Features under development
 
 - Query Performance profiler
-- Entity type Enum handling

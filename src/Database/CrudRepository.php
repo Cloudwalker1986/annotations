@@ -3,11 +3,13 @@ declare(strict_types=1);
 
 namespace Database;
 
+use Database\Attributes\Entity\Enum;
 use Database\Attributes\Table\Column;
 use Database\Attributes\Table\ErrorCode\ErrorCode;
 use Database\Attributes\Table\Exception\MissingPrimaryKeyException;
 use Database\Attributes\Table\PrimaryKey;
 use ReflectionClass;
+use ReflectionEnum;
 
 class CrudRepository extends BaseRepository implements CrudRepositoryInterface
 {
@@ -131,9 +133,18 @@ class CrudRepository extends BaseRepository implements CrudRepositoryInterface
 
                 $key = $column->getColumn();
             }
-            $data[$key] = $value;
-        }
 
+            $enum = $reflectionProperty->getAttributes(Enum::class)[0] ?? [];
+
+            if (is_object($value) && (!empty($enum) || enum_exists($value))) {
+                /** @var ReflectionEnum $enumReflection */
+                $enumReflection = new ReflectionEnum($reflectionProperty->getValue($entity));
+                $val = $enumReflection->getProperty('value')->getValue($reflectionProperty->getValue($entity));
+                $data[$key] = $val;
+            } else {
+                $data[$key] = $value;
+            }
+        }
         return $data;
     }
 }

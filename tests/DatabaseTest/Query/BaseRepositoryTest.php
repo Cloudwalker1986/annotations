@@ -12,6 +12,7 @@ use Database\Autowired\AutowiredHandler;
 use DatabaseTest\Example\ExampleService;
 use DatabaseTest\Example\InvalidEntity;
 use DatabaseTest\Example\UserEntity;
+use DatabaseTest\Example\UserStatus;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use Utils\ListCollection;
@@ -33,6 +34,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   `id_user` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
+  `status` ENUM('active', 'deleted') default 'active',
   PRIMARY KEY (`id_user`),
   UNIQUE KEY `user_email_uindex` (`email`),
   UNIQUE KEY `user_name_uindex` (`name`)
@@ -42,11 +44,11 @@ TAG
         );
         $this->getPdoReader()->getConnection()->exec(
             <<<'TAG'
-INSERT INTO `user` (`id_user`, `name`, `email`) 
+INSERT INTO `user` (`id_user`, `name`, `email`, `status`) 
     VALUES  
-        (1, "test", "test@test.de"), 
-        (2, "test2", "test2@test.de"),
-        (3, "SomeOther", "other@other.de")
+        (1, "test", "test@test.de", 'active'), 
+        (2, "test2", "test2@test.de", 'deleted'),
+        (3, "SomeOther", "other@other.de", 'active')
 TAG
 );
         parent::setUp();
@@ -83,8 +85,8 @@ TAG
 
         $collection = new ListCollection();
         $collection
-            ->add(new UserEntity(1, 'test', 'test@test.de'))
-            ->add(new UserEntity(2, 'test2', 'test2@test.de'));
+            ->add(new UserEntity(1, 'test', 'test@test.de', UserStatus::from('active')))
+            ->add(new UserEntity(2, 'test2', 'test2@test.de', UserStatus::from('deleted')));
         $this->assertEquals($collection, $svc->findAll());
     }
 
@@ -98,7 +100,7 @@ TAG
 
         $collection = new ListCollection();
         $collection
-            ->add(new UserEntity(3, 'SomeOther', 'other@other.de'));
+            ->add(new UserEntity(3, 'SomeOther', 'other@other.de', UserStatus::from('active')));
         $this->assertEquals($collection, $svc->findBySomeCustomSearch());
     }
 
@@ -112,7 +114,7 @@ TAG
 
         $collection = new ListCollection();
         $collection
-            ->add(new UserEntity(2, 'test2', 'test2@test.de'));
+            ->add(new UserEntity(2, 'test2', 'test2@test.de', UserStatus::from('deleted')));
         $this->assertEquals($collection, $svc->findByPagination());
     }
 
@@ -127,7 +129,7 @@ TAG
         /** @var ExampleService $svc */
         $svc = $this->container->get(ExampleService::class);
 
-        $userToCreate = new UserEntity(name: 'user persisted', email: 'persisted@test.de');
+        $userToCreate = new UserEntity(name: 'user persisted', email: 'persisted@test.de', status: UserStatus::ACTIVE);
 
         $user = $svc->persistsUser($userToCreate);
 
