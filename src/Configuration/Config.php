@@ -20,7 +20,14 @@ class Config
             throw new InvalidArgumentException('Application configuration is not defined');
         }
 
-        $this->config = yaml_parse_file(APPLICATION_CONFIG);
+        $config = yaml_parse_file(APPLICATION_CONFIG);
+        $devConfig = [];
+
+        if (defined('APPLICATION_DEV_CONFIG') && file_exists(APPLICATION_DEV_CONFIG)) {
+            $devConfig = yaml_parse_file(APPLICATION_DEV_CONFIG);
+        }
+
+        $this->config = array_merge($config, $devConfig);
     }
 
     public function getValueByPath(Value $value): string|int|float|array|Map|Collection|null|bool
