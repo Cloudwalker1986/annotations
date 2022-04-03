@@ -28,6 +28,8 @@ class WriterFactory
 
         if (SupportedAdapters::isPdo($adapterConfig)) {
             $adapter = $container->get(PdoWriterAdapter::class);
+        } elseif (SupportedAdapters::isMysqli($adapterConfig)) {
+            $adapter = $container->get(MysqliWriterAdapter::class);
         }
 
         if (!($adapter instanceof WriterAdapterInterface)) {
