@@ -37,13 +37,13 @@ class AbstractAdapter
 
     protected function getPreparedStatement(string $query, array $bindParameters): PDOStatement|mysqli
     {
-        if ($this->connection === null) {
+        if ($this->getConnection() === null) {
             throw new RuntimeException('Connection to database is not established.');
         }
 
         $query = $this->applyPagination($bindParameters, $query);
 
-        $stmt = $this->connection->prepare($query);
+        $stmt = $this->getConnection()->prepare($query);
         $debugQuery = $query;
 
         $this->bindParameters($bindParameters, $stmt, $debugQuery);

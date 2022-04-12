@@ -4,7 +4,7 @@
     "type": "project",
     "require": {
         "php": "8.1.*",
-        "autowired/autowired": "2.0.*",
+        "autowired/autowired": "2.1.*",
         "ext-mbstring": "*",
         "ext-pdo": "*",
         "ext-yaml": "*",

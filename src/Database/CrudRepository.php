@@ -136,11 +136,8 @@ class CrudRepository extends BaseRepository implements CrudRepositoryInterface
 
             $enum = $reflectionProperty->getAttributes(Enum::class)[0] ?? [];
 
-            if (is_object($value) && (!empty($enum) || enum_exists($value))) {
-                /** @var ReflectionEnum $enumReflection */
-                $enumReflection = new ReflectionEnum($reflectionProperty->getValue($entity));
-                $val = $enumReflection->getProperty('value')->getValue($reflectionProperty->getValue($entity));
-                $data[$key] = $val;
+            if (!empty($enum) && is_object($value) && enum_exists($value::class)) {
+                $data[$key] = $value->value;
             } else {
                 $data[$key] = $value;
             }
