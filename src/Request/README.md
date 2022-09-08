@@ -1,6 +1,6 @@
 # Routing
 
-With the annotation module **Request** you can define a route for given HTTP request. In order to define a route you need to put the attribute #[Route] to a public method.
+With the annotation module **Request** you can define a route for    HTTP request. In order to define a route you need to put the attribute #[Route] to a public method.
 
 
 
@@ -68,7 +68,7 @@ $response = $dispatcher->dispatch();
 
 ## Request Parameter
 
-One advantage of the module **Request** within the registration of method the for the request you can define parameters for the method which will be parsed either by the GET|POST parameters, by the request URI or by the raw body content.
+The advantage of this module is the parameter signature for methods. For a HTTP request you can define parameters which will be parsed either by the GET|POST  or RawBodyParameter parameters.
 
 #### Example one
 ```php
@@ -99,17 +99,16 @@ class UserController
 class UserController 
 {
     #[\Request\Attributes\Route(
-    '/user/login', \Request\Attributes\Route::HTTP_METHOD_POST)]
-    public function login(
-        #[\Request\Attributes\Parameters\PostParameter] LoginRequest $loginRequest
-    )
+        '/user/login',
+         \Request\Attributes\Route::HTTP_METHOD_POST
+     )]
+    public function login(#[\Request\Attributes\Parameters\PostParameter] LoginRequest $loginRequest)
     {
         
     }
     
     #[\Request\Attributes\Route('/user/\d', \Request\Attributes\Route::HTTP_METHOD_GET)]
-    public function profile(
-        #[\Request\Attributes\Parameters\GetParameter] int $userId)
+    public function profile(#[\Request\Attributes\Parameters\GetParameter] int $userId)
     {
     
     }

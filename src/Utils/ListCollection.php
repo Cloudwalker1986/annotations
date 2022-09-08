@@ -21,6 +21,11 @@ class ListCollection implements Collection
         }
     }
 
+    public function getList(): array
+    {
+        return $this->map;
+    }
+
     public function count(): int
     {
         return count($this->map);
@@ -35,6 +40,8 @@ class ListCollection implements Collection
     {
         reset($this->map);
     }
+
+
 
     public function flush(): void
     {
