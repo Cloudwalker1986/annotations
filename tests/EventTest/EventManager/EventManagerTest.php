@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace EventTest\EventManager;
 
 use Autowired\DependencyContainer;
-use Event\Listener\Resolver;
+use Event\Subscriber\Resolver;
 use EventTest\Example\ExampleService;
 use EventTest\Example\Payload;
 use PHPUnit\Framework\TestCase;

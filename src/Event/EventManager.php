@@ -5,7 +5,7 @@ namespace Event;
 
 use Autowired\Autowired;
 use Autowired\DependencyContainer;
-use Event\DataObject\EventDispatch;
+use Event\DataObject\EventSubscriber;
 use Event\Exception\NotRegisteredEventException;
 use Utils\Collection;
 use Utils\HashMap;
@@ -19,31 +19,31 @@ class EventManager
     #[Autowired]
     private DependencyContainer $dependencyContainer;
 
-    public function addListener(string $eventName, EventDispatch $listener): void
+    public function addSubscriber(string $eventName, EventSubscriber $subscriber): void
     {
         if ($this->listenerEventNameMap->has($eventName)) {
             /** @var Collection $collection */
             $collection = $this->listenerEventNameMap->get($eventName);
-            $collection->add($listener);
+            $collection->add($subscriber);
             return;
         }
 
         $collection = new ListCollection();
-        $collection->add($listener);
+        $collection->add($subscriber);
         $this->listenerEventNameMap->add($eventName, $collection);
     }
 
-    public function dispatch(string $eventName, PayloadInterface $payload)
+    public function dispatch(string $eventName, PayloadInterface $payload): void
     {
         $this->assertEventNameIsRegistered($eventName);
 
         /** @var Collection $listeners */
         $listeners = $this->listenerEventNameMap->get($eventName);
 
-        /** @var EventDispatch $eventDispatchDataObject */
+        /** @var EventSubscriber $eventDispatchDataObject */
         foreach ($listeners->getList() as $eventDispatchDataObject) {
             try {
-                $listener = $this->dependencyContainer->get($eventDispatchDataObject->getListener());
+                $listener = $this->dependencyContainer->get($eventDispatchDataObject->getSubscriber());
                 $listener->{$eventDispatchDataObject->getMethod()}($payload);
             } catch (\Throwable $e) {
                 // for now no handling required
@@ -52,7 +52,7 @@ class EventManager
         }
     }
 
-    private function assertEventNameIsRegistered(string $eventName)
+    private function assertEventNameIsRegistered(string $eventName): void
     {
         if (!$this->listenerEventNameMap->has($eventName)) {
             throw new NotRegisteredEventException($eventName);

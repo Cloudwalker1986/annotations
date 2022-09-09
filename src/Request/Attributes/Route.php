@@ -13,8 +13,8 @@ class Route
     public const HTTP_METHOD_PUT = 'PUT';
 
     public function __construct(
-        private string $path,
-        private ?string $method = self::HTTP_METHOD_GET
+        private readonly string $path,
+        private readonly ?string $method = self::HTTP_METHOD_GET
     ) {}
 
     public function getPath(): string

@@ -9,7 +9,10 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 class JsonResponse
 {
-    public function __construct(private ?string $alias = '', private ?bool $ignore = false) {}
+    public function __construct(
+        private readonly ?string $alias = '',
+        private readonly ?bool $ignore = false
+    ) {}
 
     public function getAlias(): ?string
     {

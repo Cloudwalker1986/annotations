@@ -13,7 +13,11 @@ This component is still under development but already linked components can be u
 
 [HTTP Request routing](src/Request/README.md)
 
+[Event Manager](src/Event/README.md)
+
 # Current Features under development
 
 - Query Performance profiler
 - Event Handling
+- Adaption on the Configuration module
+- JsonConverter

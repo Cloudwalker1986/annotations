@@ -7,10 +7,8 @@ use Request\Attributes\Parameters\PostParameter;
 
 class ExamplePostObjectParameter
 {
-    #[PostParameter]
     private ?string $parameterOne;
 
-    #[PostParameter]
     private ?string $parameterTwo;
 
     #[PostParameter('aliasParameter')]

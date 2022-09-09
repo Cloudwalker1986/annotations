@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Request\Response;
 
+use JetBrains\PhpStorm\ArrayShape;
 use JsonException;
 use ReflectionAttribute;
 use ReflectionClass;
@@ -67,7 +68,6 @@ class JsonResolver
                }
                $field = empty($attributeObj->getAlias()) ? $property->getName() : $attributeObj->getAlias();
 
-               $property->setAccessible(true);
                $payload[$field] = $property->getValue($entity);
             });
         });
@@ -75,7 +75,8 @@ class JsonResolver
         return $payload;
     }
 
-    private function resolvePagination(RestResponse $response): ?array
+    #[ArrayShape(['limit' => "int", 'offset' => "int", 'count' => "int"])]
+    private function resolvePagination(RestResponse $response): array
     {
         return [
             'limit' => 0,

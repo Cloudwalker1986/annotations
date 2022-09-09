@@ -5,7 +5,7 @@ namespace Utils;
 
 use InvalidArgumentException;
 
-interface Collection
+interface Collection extends \Iterator
 {
     /**
      * Add a new element to the with a key to the map
@@ -21,6 +21,8 @@ interface Collection
 
     /**
      * Returns an array of all added elements
+     * Please do not use this function anymore since Collection interface is already extending the Iterator interface
+     * @deprecated
      */
     public function getList(): array;
 
@@ -28,16 +30,6 @@ interface Collection
      * Returns the count of all added elements
      */
     public function count(): int;
-
-    /**
-     * Moves the pointer of the map to the next element
-     */
-    public function next(): void;
-
-    /**
-     * Move the pointer back to the first element
-     */
-    public function rewind(): void;
 
     /**
      * Erase the map elements

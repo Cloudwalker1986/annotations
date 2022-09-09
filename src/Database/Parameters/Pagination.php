@@ -5,7 +5,7 @@ namespace Database\Parameters;
 
 class Pagination
 {
-    public function __construct(private int $limit, private int $offset){}
+    public function __construct(private readonly int $limit, private readonly int $offset){}
 
     public function getLimit(): int
     {

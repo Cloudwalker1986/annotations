@@ -14,9 +14,13 @@ class Request
     {
         if ($parameter->isGet()) {
             return $_GET;
-        } elseif ($parameter->isPost()) {
+        }
+
+        if ($parameter->isPost()) {
             return $_POST;
-        } elseif ($parameter->isRawBody()) {
+        }
+
+        if ($parameter->isRawBody()) {
             return json_decode(
                 file_get_contents('php://input'), true, 512, JSON_THROW_ON_ERROR
             );
