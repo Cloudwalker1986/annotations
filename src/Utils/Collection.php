@@ -20,6 +20,11 @@ interface Collection
     public function getByIndex(int $key): string|float|int|array|object;
 
     /**
+     * Returns an array of all added elements
+     */
+    public function getList(): array;
+
+    /**
      * Returns the count of all added elements
      */
     public function count(): int;

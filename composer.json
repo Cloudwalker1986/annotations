@@ -32,13 +32,14 @@
             "Database\\": "src/Database",
             "Request\\": "src/Request",
             "Utils\\": "src/Utils",
+            "Event\\": "src/Event",
             "RequestTest\\": "tests/RequestTest",
             "DatabaseTest\\": "tests/DatabaseTest"
         }
     },
     "scripts": {
         "all-tests": [
-            "vendor/bin/phpunit -c tests/config.xml tests/"
+            "vendor/bin/phpunit -c tests/phpunit.xml tests/"
         ]
     }
 }

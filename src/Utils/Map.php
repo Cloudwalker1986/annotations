@@ -18,6 +18,11 @@ interface Map
     public function get(string $key): string|float|int|array|object;
 
     /**
+     * Returns a true when the key is already part of the hashmap and false if the key does not exists
+     */
+    public function has(string $key): bool;
+
+    /**
      * Returns the count of all added elements
      */
     public function count(): int;

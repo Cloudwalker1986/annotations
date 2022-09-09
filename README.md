@@ -3,7 +3,7 @@
 # Annotations
 This annotation component will help you to develop faster and easier your application.
 
-This component is still under development (alpha version)
+This component is still under development but already linked components can be used.
 
 # Released features:
 
@@ -16,3 +16,4 @@ This component is still under development (alpha version)
 # Current Features under development
 
 - Query Performance profiler
+- Event Handling

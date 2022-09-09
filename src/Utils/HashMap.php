@@ -42,4 +42,9 @@ class HashMap implements Map
     {
         $this->map = [];
     }
+
+    public function has(string $key): bool
+    {
+        return isset($this->map[$key]);
+    }
 }
