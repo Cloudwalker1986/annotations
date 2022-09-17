@@ -7,7 +7,7 @@ namespace Request\Attributes\Parameters;
 class GetParameter implements Parameter {
 
     public function __construct(
-        private ?string $alias = null,
+        private readonly ?string $alias = null,
     ) {}
 
     public function getAlias(): ?string

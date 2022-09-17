@@ -7,7 +7,7 @@ use Utils\Map;
 
 class BadRequestEntity implements Entity
 {
-    public function __construct(private string $errorMessage, private ?Map $errorFields = null) {}
+    public function __construct(private readonly string $errorMessage, private readonly ?Map $errorFields = null) {}
 
     public function getErrorMessage(): string
     {

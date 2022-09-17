@@ -1,13 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace Event\Listener;
+namespace Event\Subscriber;
 
 use Autowired\Autowired;
 use Autowired\DependencyContainer;
-use Event\Attributes\ListenTo;
-use Event\DataObject\EventDispatch;
+use Event\Attributes\SubscribeTo;
+use Event\DataObject\EventSubscriber;
 use Event\EventManager;
+use ReflectionClass;
+use ReflectionException;
 
 class Resolver
 {
@@ -22,14 +24,17 @@ class Resolver
     /**
      * The resolver will recursive over dir entry point
      */
-    public function resolve(string $dirEntryPoint)
+    public function resolve(string $dirEntryPoint): void
     {
         $filesAndSubDirs = scandir($dirEntryPoint);
 
         array_walk($filesAndSubDirs, [$this, 'resolveDir'], $dirEntryPoint);
     }
 
-    public function resolveDir(string $value, int $index, string $parentDir)
+    /**
+     * @throws ReflectionException
+     */
+    public function resolveDir(string $value, int $index, string $parentDir): void
     {
         if (in_array($value, static::EXCLUDE_DOTS)) {
             return;
@@ -39,7 +44,7 @@ class Resolver
 
             $namespace = $this->extractNamespace($parentDir . DIRECTORY_SEPARATOR . $value);
 
-            $classReflection = new \ReflectionClass(sprintf(
+            $classReflection = new ReflectionClass(sprintf(
                 '%s\%s',
                 $namespace,
                 str_replace(['.phpt', '.php'], '', $value)
@@ -51,7 +56,7 @@ class Resolver
         $this->resolve($parentDir . DIRECTORY_SEPARATOR . $value);
     }
 
-    private function extractNamespace(string $file)
+    private function extractNamespace(string $file): ?string
     {
         $ns = null;
         $handle = fopen($file, 'rb');
@@ -68,16 +73,19 @@ class Resolver
         return $ns;
     }
 
-    private function checkForListingTo(\ReflectionClass $classReflection)
+    /**
+     * @throws ReflectionException
+     */
+    private function checkForListingTo(ReflectionClass $classReflection): void
     {
         foreach ($classReflection->getMethods() as $method) {
             $methodReflection = $classReflection->getMethod($method->getName());
-            foreach ($methodReflection->getAttributes(ListenTo::class) as $attribute) {
-                /** @var ListenTo $listener */
-                $listener = $attribute->newInstance();
-                $this->eventManager->addListener(
-                    $listener->getEventName(),
-                    new EventDispatch($listener->getListener(), $method->getName())
+            foreach ($methodReflection->getAttributes(SubscribeTo::class) as $attribute) {
+                /** @var SubscribeTo $subscriber */
+                $subscriber = $attribute->newInstance();
+                $this->eventManager->addSubscriber(
+                    $subscriber->getEventName(),
+                    new EventSubscriber($subscriber->getSubscriber(), $method->getName())
                 );
             }
         }

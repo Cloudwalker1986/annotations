@@ -29,7 +29,12 @@ class CrudRepository extends BaseRepository implements CrudRepositoryInterface
             $bindParams[] = sprintf(':%s', $key);
         }
 
-        $query = sprintf('INSERT INTO `%s` (%s) VALUES (%s) ', $repository->getTable(), implode(',', $quotedKeys), implode(',', $bindParams),);
+        $query = sprintf(
+            'INSERT INTO `%s` (%s) VALUES (%s) ',
+            $repository->getTable(),
+            implode(',', $quotedKeys),
+            implode(',', $bindParams)
+        );
 
         $primaryKeyValue = $this->getWriterAdapter()->persists($query, $data);
 

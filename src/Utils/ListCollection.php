@@ -5,46 +5,61 @@ namespace Utils;
 
 class ListCollection implements Collection
 {
-    private array $map;
+    private array $collection;
 
     public function add(float|object|int|array|string $value): Collection
     {
-        $this->map[] = $value;
+        $this->collection[] = $value;
         return $this;
     }
 
     public function getByIndex(int $key): string|float|int|array|object
     {
-        if (!isset($this->map[$key])) {
+        if (!isset($this->collection[$key])) {
             throw new \InvalidArgumentException(
-                sprintf('Undefined map index "%s"', $key));
+                sprintf('Undefined collection index "%s"', $key));
         }
+
+        return $this->collection[$key];
     }
 
     public function getList(): array
     {
-        return $this->map;
+        return $this->collection;
     }
 
     public function count(): int
     {
-        return count($this->map);
+        return count($this->collection);
     }
 
     public function next(): void
     {
-        next($this->map);
+        next($this->collection);
     }
 
     public function rewind(): void
     {
-        reset($this->map);
+        reset($this->collection);
     }
-
-
 
     public function flush(): void
     {
-        $this->map = [];
+        $this->collection = [];
+    }
+
+    public function current(): mixed
+    {
+        return current($this->collection);
+    }
+
+    public function key(): int|null
+    {
+        return key($this->collection);
+    }
+
+    public function valid(): bool
+    {
+        return array_key_exists($this->key(), $this->collection);
     }
 }

@@ -105,8 +105,6 @@ class BaseRepository
                 $key = $column->getColumn();
             }
 
-            $reflectionProperty->setAccessible(true);
-
             $value = $data[$key];
 
             $enums = $reflectionProperty->getAttributes(Enum::class);

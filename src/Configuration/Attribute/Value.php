@@ -8,7 +8,7 @@ use Attribute;
 #[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_PROPERTY)]
 class Value
 {
-    public function __construct(private string $path){}
+    public function __construct(private readonly string $path){}
 
     public function getPath(): string
     {

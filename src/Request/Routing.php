@@ -21,6 +21,11 @@ final class Routing
 
     private array $registeredController;
 
+    /**
+     * @throws \Autowired\Exception\InterfaceArgumentException
+     * @throws Arguments\InvalidArgumentDefinitionException
+     * @throws \JsonException
+     */
     public function createDispatcher(string $requestUri): Dispatcher
     {
         $positionOfGetParams = mb_strpos($requestUri, "?");
@@ -65,6 +70,11 @@ final class Routing
 
     }
 
+    /**
+     * @throws \Autowired\Exception\InterfaceArgumentException
+     * @throws Arguments\InvalidArgumentDefinitionException
+     * @throws \JsonException
+     */
     public function dispatchRoute(string $requestUri): Response|RestResponse
     {
         $positionOfGetParams = mb_strpos($requestUri, "?");

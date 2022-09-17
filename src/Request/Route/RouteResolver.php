@@ -5,10 +5,14 @@ namespace Request\Route;
 
 use Autowired\Autowired;
 use Autowired\DependencyContainer;
+use Autowired\Exception\InterfaceArgumentException;
+use JsonException;
 use ReflectionAttribute;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionMethod;
 use Request\Arguments\ArgumentsResolver;
+use Request\Arguments\InvalidArgumentDefinitionException;
 use Request\Attributes\Route;
 use Request\Exceptions\InvalidParameterException;
 use Request\Response\Response;
@@ -27,11 +31,16 @@ class RouteResolver
     #[Autowired]
     private DependencyContainer $container;
 
+    /**
+     * @throws InterfaceArgumentException
+     * @throws InvalidArgumentDefinitionException
+     * @throws JsonException
+     */
     public function resolveMatchedRoute(
-        \ReflectionMethod $method,
-        \ReflectionAttribute $routeAnnotation,
+        ReflectionMethod $method,
+        ReflectionAttribute $routeAnnotation,
         string $requestUri,
-        \ReflectionClass $controllerReflection
+        ReflectionClass $controllerReflection
     ): ?Response {
 
         /** @var Route $route */
@@ -51,7 +60,7 @@ class RouteResolver
                     $invalidParameterException->getErrorMap()
                 )
             );
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
         }
         return null;
     }
@@ -83,6 +92,12 @@ class RouteResolver
         return $isRouteCorrect && $isMethodCorrect;
     }
 
+    /**
+     * @throws InterfaceArgumentException
+     * @throws ReflectionException
+     * @throws InvalidArgumentDefinitionException
+     * @throws JsonException
+     */
     public function getDispatcher(
         ReflectionMethod $method,
         ReflectionAttribute $routeAnnotation,

@@ -42,7 +42,7 @@ class AutowiredHandler implements InterfaceHandler
             $skeleton = file_get_contents(realpath(__DIR__ . $ds . '..' . $ds .'Tmp' . $ds . 'BaseSkeleton.txt'));
         }
 
-        $className = 'Database\\Tmp\\Concrete\\%sRepository';
+        $className = 'Database\\Tmp\\%sRepository';
 
         $use = [$typed->getName()];
 
@@ -57,6 +57,11 @@ class AutowiredHandler implements InterfaceHandler
         );
 
         $className = sprintf($className, $hash);
+        $filePath = __DIR__ . $ds . '..' .$ds. 'Tmp' . $ds . $hash .'Repository.php';
+
+        if (file_exists($filePath)) {
+            return $className;
+        }
 
         $bodyContent = $this->renderBodyContent($typed, $use);
         $uses = '';
@@ -80,17 +85,8 @@ class AutowiredHandler implements InterfaceHandler
             $skeleton
         );
 
-        if (!class_exists($className, false)) {
-            eval($classBody);
+        file_put_contents(__DIR__ . $ds . '..' .$ds. 'Tmp' . $ds . $hash .'Repository.php', $classBody);
 
-            call_user_func(
-                [
-                    $className,
-                    'invoke'
-                ],
-                ...$typed->getMethods()
-            );
-        }
         return $className;
     }
 

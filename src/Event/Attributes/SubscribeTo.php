@@ -4,17 +4,17 @@ declare(strict_types=1);
 namespace Event\Attributes;
 
 #[\Attribute(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
-class ListenTo
+class SubscribeTo
 {
-    public function __construct(private readonly string $eventName, private readonly string $listener) {}
+    public function __construct(private readonly string $eventName, private readonly string $subscriber) {}
 
     public function getEventName(): string
     {
         return $this->eventName;
     }
 
-    public function getListener(): string
+    public function getSubscriber(): string
     {
-        return $this->listener;
+        return $this->subscriber;
     }
 }

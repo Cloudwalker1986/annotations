@@ -9,9 +9,8 @@ use Attribute;
 class JsonRequest
 {
     public function __construct(
-        private ?string $alias = null,
-        private ?string $classType = null
-
+        private readonly ?string $alias = null,
+        private readonly ?string $classType = null
     ) {}
 
     public function getAlias(): ?string

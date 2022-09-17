@@ -1,6 +1,7 @@
+<?php
 declare(strict_types=1);
 
-namespace Database\Tmp\Concrete;
+namespace Database\Tmp;
 
 use Database\BaseRepository;
 __USE__

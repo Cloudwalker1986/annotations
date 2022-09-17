@@ -8,7 +8,7 @@ use InvalidArgumentException;
 
 class InvalidParameterException extends InvalidArgumentException
 {
-    public function __construct(private Map $errorMap)
+    public function __construct(private readonly Map $errorMap)
     {
         parent::__construct('Required parameters are missing', 400);
     }

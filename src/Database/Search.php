@@ -5,7 +5,7 @@ namespace Database;
 
 class Search
 {
-    public function __construct(private string $key, private string|array|int|float|null $value){}
+    public function __construct(private readonly string $key, private readonly string|array|int|float|null $value){}
 
     public function getKey(): string
     {
