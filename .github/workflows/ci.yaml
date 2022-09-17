@@ -1,4 +1,4 @@
-name: PHP Unit Tests
+name: PHP Integration Tests
 
 on:
   push:
