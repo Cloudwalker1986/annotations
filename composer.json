@@ -31,8 +31,11 @@
             "Configuration\\": "src/Configuration",
             "Database\\": "src/Database",
             "Request\\": "src/Request",
+            "Json\\": "src/Json",
             "Utils\\": "src/Utils",
             "Event\\": "src/Event",
+            "EventTest\\": "tests/EventTest",
+            "JsonTest\\": "tests/JsonTest",
             "RequestTest\\": "tests/RequestTest",
             "DatabaseTest\\": "tests/DatabaseTest"
         }
