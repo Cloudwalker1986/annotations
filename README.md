@@ -5,19 +5,25 @@ This annotation component will help you to develop faster and easier your applic
 
 This component is still under development but already linked components can be used.
 
-# Released features:
+# Installation
+Use the following composer command
 
-[Configuration](src/Configuration/README.md)
+```
+composer require cloudwalker1986/annotations
+```
 
-[Database](src/Database/README.md)
+# Released components:
 
-[HTTP Request routing](src/Request/README.md)
+[Configuration](src/Configuration/README.md) _last update (2022-09-22)_
 
-[Event Manager](src/Event/README.md)
+[Database](src/Database/README.md) _last update (2022-09-10)_-10)_
+
+[Event Manager](src/Event/README.md) _last update (2022-09-08)_
+
+[HTTP Request routing](src/Request/README.md) _last update (2022-09
+
+[JSON Converter](src/Json/README.md) _last update (2022-09-18)_
 
 # Current Features under development
 
 - Query Performance profiler
-- Event Handling
-- Adaption on the Configuration module
-- JsonConverter

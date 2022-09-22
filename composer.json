@@ -29,6 +29,7 @@
         ],
         "psr-4": {
             "Configuration\\": "src/Configuration",
+            "ConfigurationTest\\": "tests/ConfigurationTest",
             "Database\\": "src/Database",
             "Request\\": "src/Request",
             "Json\\": "src/Json",
