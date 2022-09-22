@@ -16,11 +16,11 @@ composer require cloudwalker1986/annotations
 
 [Configuration](src/Configuration/README.md) _last update (2022-09-22)_
 
-[Database](src/Database/README.md) _last update (2022-09-10)_-10)_
+[Database](src/Database/README.md) _last update (2022-09-10)_
 
 [Event Manager](src/Event/README.md) _last update (2022-09-08)_
 
-[HTTP Request routing](src/Request/README.md) _last update (2022-09
+[HTTP Request routing](src/Request/README.md) _last update (2022-09-10)_
 
 [JSON Converter](src/Json/README.md) _last update (2022-09-18)_
 
